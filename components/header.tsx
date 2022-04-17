@@ -39,10 +39,12 @@ export function Header() {
         <li className="px-5 py-2">Videos</li>
         <li className="px-5 py-2">About</li> */}
           </ul>
-          <HamburgerButton
-            open={open}
-            onClick={() => setOpen(!open)}
-          />
+          <div className="pl-5">
+            <HamburgerButton
+              open={open}
+              onClick={() => setOpen(!open)}
+            />
+          </div>
         </nav>
       </div>
 
