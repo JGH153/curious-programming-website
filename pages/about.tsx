@@ -24,6 +24,10 @@ function About(props: { a: number }) {
   );
 }
 
+// <a href="https://www.flaticon.com/free-icons/youtube" title="youtube icons">Youtube icons created by Freepik - Flaticon</a>
+// <a href="https://www.flaticon.com/free-icons/medium" title="medium icons">Medium icons created by Freepik - Flaticon</a>
+// <a href="https://www.flaticon.com/free-icons/twitter" title="twitter icons">Twitter icons created by Freepik - Flaticon</a>
+
 export async function getStaticProps() {
   return {
     props: { a: 1 }, // will be passed to the page component as props

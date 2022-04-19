@@ -13,18 +13,18 @@ export function Header() {
           className="text-primary underlined focus:outline-none block whitespace-nowrap text-2xl font-medium transition"
           href="/"
         > */}
-            <h1 className="text-primary underlined focus:outline-none block whitespace-nowrap text-2xl font-medium transition">
-              Curious Programming
+            <h1 className="text-primary underlined focus:outline-none block whitespace-nowrap text-3xl md:text-4xl lg:text-5xl font-medium transition">
+              Curious Programming 🤔
             </h1>
             {/* </a> */}
           </div>
-          <ul className="hidden sm:flex">
+          <ul className="hidden md:flex">
             {pages.map((page, i) => (
               <li
                 className="px-5 py-2"
                 key={page}
               >
-                <span className="text-lg font-medium underlined">{page}</span>
+                <span className="text-xl font-medium underlined">{page}</span>
               </li>
             ))}
             {/* <li className="px-5 py-2">
@@ -49,7 +49,7 @@ export function Header() {
       </div>
 
       {open && (
-        <ul className="absolute flex flex-col items-center justify-center py-8 mt-10 space-y-6 drop-shadow-lg left-6 right-6 font-bold bg-white">
+        <ul className="absolute flex flex-col items-center justify-center py-8 mt-2 space-y-6 drop-shadow-lg left-6 right-6 font-bold bg-background-dark">
           {/* <ul className="absolute flex-col items-center self-end py-8 mt-10 space-y-6 font-bold bg-white sm:w-auto sm:self-center left-6 right-6 drop-shadow-md"> */}
           {pages.map((page, i) => (
             <li
