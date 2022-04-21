@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { Card } from "../components/Card";
 import { Header } from "../components/header";
 import styles from "../styles/Home.module.css";
 
@@ -10,7 +11,12 @@ interface ItemLink {
   imgUrl: string;
 }
 
-const Home: NextPage = () => {
+interface BlogPost {
+  title: string;
+}
+
+const Home: NextPage = (props: any) => {
+  console.log("props", props);
   const links: ItemLink[] = [
     {
       href: "https://www.youtube.com/channel/UCVHumdPKnAbTFceoP-rD33g",
@@ -55,7 +61,7 @@ const Home: NextPage = () => {
               </div> */}
             </div>
             <div className="flex flex-col space-y-2 items-start mx-auto max-w-max md:w-1/2">
-              <h1 className="text-2xl font-bold text-left md:text-4xl">Links</h1>
+              <h1 className="text-2xl font-bold text-left md:text-4xl">Useful Links</h1>
               {links.map((element) => (
                 <a
                   href={element.href}
@@ -70,6 +76,17 @@ const Home: NextPage = () => {
                   />
                   <span>{element.label}</span>
                 </a>
+              ))}
+            </div>
+          </section>
+          <section>
+            {/* List off posts */}
+            <div className="flex flex-col space-y-4">
+              {props.posts.map((current: any) => (
+                <Card
+                  title={current.title}
+                  key={current.title}
+                />
               ))}
             </div>
           </section>
@@ -91,5 +108,28 @@ const Home: NextPage = () => {
     </div>
   );
 };
+
+export async function getStaticProps() {
+  // const response = await fetch("https://jsonplaceholder.typicode.com/todos/1");
+  // const data = await response.json();
+
+  const sanityClient = require("@sanity/client");
+  const client = sanityClient({
+    projectId: "p3gew69c",
+    dataset: "production",
+    apiVersion: "2021-03-25", // use current UTC date - see "specifying API version"!
+    token: "", // or leave blank for unauthenticated usage
+    useCdn: false, // `false` if you want to ensure fresh data
+  });
+
+  const query = '*[_type == "post"] {title}';
+  const params = { minSeats: 2 };
+
+  const posts = await client.fetch(query, params);
+
+  return {
+    props: { posts: posts }, // will be passed to the page component as props
+  };
+}
 
 export default Home;

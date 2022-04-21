@@ -10,6 +10,7 @@
     "prettier-fix": "prettier --write ."
   },
   "dependencies": {
+    "@sanity/client": "^3.3.0",
     "next": "12.1.x",
     "react": "18.0.x",
     "react-dom": "18.0.x"
