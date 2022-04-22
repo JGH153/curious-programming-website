@@ -42,10 +42,10 @@ const Home: NextPage = (props: any) => {
         <main>
           123 Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse tenetur eaque omnis eum rem. Ex voluptas,
           iste aperiam eligendi magni harum minus iusto consectetur earum fugiat praesentium quos tenetur veniam.
-          <section className="container flex flex-col md:flex-row items-center mb-16 mt-10 px-6 space-y-0 ">
-            <div className="flex flex-col space-y-12 md:w-1/2">
-              <h1 className="max-w-md text-3xl font-bold text-center md:text-5xl md:text-left">
-                A blog for Curious Programming
+          <section className="container flex flex-col items-start md:flex-row mb-10 mt-10 px-6 space-y-0 ">
+            <div className="flex flex-col space-y-4 md:w-1/2">
+              <h1 className="max-w-md text-3xl font-bold text-center md:text-4xl md:text-left">
+                A place for Curiosity
               </h1>
               <p className="max-w-sm text-center text-white md:text-left">
                 A collection of blog post, videos and more for mainly frontend developers, but also so much more.
@@ -61,7 +61,7 @@ const Home: NextPage = (props: any) => {
               </div> */}
             </div>
             <div className="flex flex-col space-y-2 items-start mx-auto max-w-max md:w-1/2">
-              <h1 className="text-2xl font-bold text-left md:text-4xl">Useful Links</h1>
+              <h1 className="text-2xl font-bold text-left md:text-3xl">Useful Links</h1>
               {links.map((element) => (
                 <a
                   href={element.href}
@@ -86,7 +86,9 @@ const Home: NextPage = (props: any) => {
                 <Card
                   title={current.title}
                   key={current.title}
-                />
+                >
+                  {current.ingress}
+                </Card>
               ))}
             </div>
           </section>
@@ -122,7 +124,7 @@ export async function getStaticProps() {
     useCdn: false, // `false` if you want to ensure fresh data
   });
 
-  const query = '*[_type == "post"] {title}';
+  const query = '*[_type == "post"] {title, ingress}';
   const params = { minSeats: 2 };
 
   const posts = await client.fetch(query, params);
