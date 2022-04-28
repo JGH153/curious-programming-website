@@ -1,8 +1,27 @@
+import Link from "next/link";
 import { useState } from "react";
 import { HamburgerButton } from "./HamburgerButton";
 
+interface PageItem {
+  href: string;
+  label: string;
+}
+
 export function Header() {
-  const pages = ["Blog", "Videos", "About"];
+  const pages: PageItem[] = [
+    {
+      href: "/",
+      label: "Blog",
+    },
+    {
+      href: "/video",
+      label: "Videos",
+    },
+    {
+      href: "/about",
+      label: "About",
+    },
+  ];
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -22,9 +41,11 @@ export function Header() {
             {pages.map((page, i) => (
               <li
                 className="px-5 py-2"
-                key={page}
+                key={page.label}
               >
-                <span className="text-xl font-medium underlined">{page}</span>
+                <Link href={page.href}>
+                  <a className="text-xl font-medium underlined">{page.label}</a>
+                </Link>
               </li>
             ))}
             {/* <li className="px-5 py-2">
@@ -54,9 +75,9 @@ export function Header() {
           {pages.map((page, i) => (
             <li
               className="px-5 py-2"
-              key={page}
+              key={page.label}
             >
-              <span className="text-lg font-medium underlined">{page}</span>
+              <span className="text-lg font-medium underlined">{page.label}</span>
             </li>
           ))}
         </ul>

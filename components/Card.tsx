@@ -1,7 +1,8 @@
+import { ReactNode } from "react";
 import { Button } from "./Button";
 import { ButtonGradient } from "./ButtonGradient";
 
-export function Card({ title, children }: { title: string; children: any }) {
+export function Card({ title, children }: { title: string; children: ReactNode }) {
   // https://flowbite.com/docs/components/card/
   return (
     <>

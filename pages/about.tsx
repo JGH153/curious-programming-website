@@ -6,7 +6,6 @@ function About(props: { a: number }) {
   const [val, toggle] = useState(1);
   return (
     <>
-      <Header />
       <div className="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg flex items-center space-x-4">
         <div className="shrink-0">
           <img
