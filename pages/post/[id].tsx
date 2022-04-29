@@ -2,6 +2,7 @@ import { NextPage } from "next";
 import { sanityClient } from "../../api/sanityClient";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
+import Head from "next/head";
 
 // todo move to shared
 interface BlogPost {
@@ -26,6 +27,9 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
   // Render post...
   return (
     <>
+      <Head>
+        <title>{props.post.title} - Curious Programming</title>
+      </Head>
       <div>
         <h1 className="text-6xl text-center mb-8">{props.post.title}</h1>
         <p className="pb-6">{props.post.ingress}</p>
