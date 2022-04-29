@@ -1,25 +1,47 @@
 import { NextPage } from "next";
 import { sanityClient } from "../../api/sanityClient";
 import { PortableText } from "@portabletext/react";
+import Image from "next/image";
 
 // todo move to shared
 interface BlogPost {
   title: string;
   ingress: string;
+  imageUrl: string;
   body: any[];
   _id: string;
 }
 
+const myPortableTextComponents = {
+  block: {
+    h1: ({ children }: any) => <h1 className="text-5xl mb-5">{children}</h1>,
+    h2: ({ children }: any) => <h1 className="text-3xl mb-4">{children}</h1>,
+    h3: ({ children }: any) => <h1 className="text-xl mb-3">{children}</h1>,
+    h4: ({ children }: any) => <h1 className="text-lg mb-2">{children}</h1>,
+  },
+};
+
 const Post: NextPage<{ post: BlogPost }> = (props) => {
-  console.log(props.post.body);
+  console.log(props.post.imageUrl, "imageUrl");
   // Render post...
   return (
     <>
       <div>
-        <h1>{props.post.title}</h1>
-        <h2>{props.post.ingress}</h2>
-        {/* {props.post.body} */}
-        <PortableText value={props.post.body} />
+        <h1 className="text-6xl text-center mb-8">{props.post.title}</h1>
+        <p className="pb-6">{props.post.ingress}</p>
+        {/* TODO improve image */}
+        <div className="container relative imageContainer">
+          <Image
+            src={props.post.imageUrl}
+            alt={props.post.title}
+            layout="fill"
+            objectFit={"contain"}
+          />
+        </div>
+        <PortableText
+          value={props.post.body}
+          components={myPortableTextComponents}
+        />
       </div>
     </>
   );
@@ -49,7 +71,8 @@ export async function getStaticProps({ params }: any) {
   // const res = await fetch(`https://.../posts/${params.id}`);
   // const post = await res.json();
 
-  const query = '*[_type == "post" && _id == $postId] {title, ingress, body, _id, _createdAt, _updatedAt}';
+  const query =
+    '*[_type == "post" && _id == $postId] {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt}';
 
   const posts: BlogPost[] = await sanityClient.fetch(query, { postId: params.id });
   if (posts.length !== 1) {

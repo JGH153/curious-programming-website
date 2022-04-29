@@ -52,3 +52,7 @@ a {
   background-color: currentColor;
   transform: scaleX(1);
 }
+
+.imageContainer {
+  height: 30rem;
+}

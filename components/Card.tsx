@@ -2,7 +2,15 @@ import { ReactNode } from "react";
 import { Button } from "./Button";
 import { ButtonGradient } from "./ButtonGradient";
 
-export function Card({ title, children }: { title: string; children: ReactNode }) {
+export function Card({
+  title,
+  actionContent,
+  children,
+}: {
+  title: string;
+  actionContent?: ReactNode;
+  children: ReactNode;
+}) {
   // https://flowbite.com/docs/components/card/
   return (
     <>
@@ -11,11 +19,11 @@ export function Card({ title, children }: { title: string; children: ReactNode }
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{title}</h5>
         </a>
         <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{children}</p>
-        {/* HREF a? */}
-        <ButtonGradient
+        {actionContent}
+        {/* <ButtonGradient
           label="Read more"
           onClick={() => {}}
-        />
+        /> */}
       </div>
     </>
   );
