@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import { Header } from "../components/header";
 
 function About(props: { a: number }) {
+  /*
+  Clean up schema for author
+  Get my author doc
+  display it
+  Make it work with a component with MDX
+  https://www.smashingmagazine.com/2020/12/mdx-stored-sanity-next-js-website/
+  */
+
   console.log("a", props.a);
   const [val, toggle] = useState(1);
   return (

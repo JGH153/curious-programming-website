@@ -32,9 +32,11 @@ export function Header() {
           className="text-primary underlined focus:outline-none block whitespace-nowrap text-2xl font-medium transition"
           href="/"
         > */}
-            <h1 className="text-primary underlined focus:outline-none block whitespace-nowrap text-3xl md:text-4xl lg:text-5xl font-medium transition">
-              Curious Programming 🤔
-            </h1>
+            <Link href={"/"}>
+              <a className="text-primary underlined focus:outline-none block whitespace-nowrap text-3xl md:text-4xl lg:text-5xl font-medium transition">
+                Curious Programming 🤔
+              </a>
+            </Link>
             {/* </a> */}
           </div>
           <ul className="hidden md:flex">

@@ -15,15 +15,16 @@ interface BlogPost {
 
 const myPortableTextComponents = {
   block: {
-    h1: ({ children }: any) => <h1 className="text-5xl mb-5">{children}</h1>,
-    h2: ({ children }: any) => <h1 className="text-3xl mb-4">{children}</h1>,
-    h3: ({ children }: any) => <h1 className="text-xl mb-3">{children}</h1>,
-    h4: ({ children }: any) => <h1 className="text-lg mb-2">{children}</h1>,
+    h1: ({ children }: any) => <h1 className="text-3xl mt-10">{children}</h1>,
+    h2: ({ children }: any) => <h1 className="text-2xl mt-6">{children}</h1>,
+    h3: ({ children }: any) => <h1 className="text-xl mt-4">{children}</h1>,
+    h4: ({ children }: any) => <h1 className="text-lg mt-3">{children}</h1>,
+    normal: ({ children }: any) => <p className="pt-3 pb-0">{children}</p>,
   },
 };
 
 const Post: NextPage<{ post: BlogPost }> = (props) => {
-  console.log(props.post.imageUrl, "imageUrl");
+  // console.log(props.post.imageUrl, "imageUrl");
   // Render post...
   return (
     <>
@@ -34,7 +35,7 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
         <h1 className="text-6xl text-center mb-8">{props.post.title}</h1>
         <p className="pb-6">{props.post.ingress}</p>
         {/* TODO improve image */}
-        <div className="container relative imageContainer">
+        <div className="container relative imageContainer mb-4">
           <Image
             src={props.post.imageUrl}
             alt={props.post.title}
@@ -47,6 +48,7 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
           components={myPortableTextComponents}
         />
       </div>
+      {/* TODO comments */}
     </>
   );
 };
