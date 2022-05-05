@@ -26,21 +26,8 @@ export default {
       },
     },
     {
-      name: "bio",
+      name: "boi",
       title: "Bio",
-      type: "array",
-      of: [
-        {
-          title: "Block",
-          type: "block",
-          styles: [{ title: "Normal", value: "normal" }],
-          lists: [],
-        },
-      ],
-    },
-    {
-      name: "content",
-      title: "Content",
       type: "markdown",
     },
   ],

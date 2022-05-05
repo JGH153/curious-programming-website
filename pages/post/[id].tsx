@@ -32,7 +32,7 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
         <title>{props.post.title} - Curious Programming</title>
       </Head>
       <div>
-        <h1 className="text-6xl text-center mb-8">{props.post.title}</h1>
+        <h1 className="text-6xl text-left mb-8">{props.post.title}</h1>
         <p className="pb-6">{props.post.ingress}</p>
         {/* TODO improve image */}
         <div className="container relative imageContainer mb-4">
