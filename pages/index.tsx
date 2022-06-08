@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
@@ -8,22 +9,27 @@ import { Card } from "../components/Card";
 import { Header } from "../components/header";
 import { HomeInfoSection } from "../components/HomeInfoSection";
 import { LinkGradient } from "../components/LinkGradient";
+import { defaultDateFormat } from "../shared/dateHelpers";
 import styles from "../styles/Home.module.css";
 
 interface BlogPost {
   title: string;
   ingress: string;
+  postedDate: string;
   _id: string;
+  _createdAt: string;
 }
 
-const Home: NextPage = (props: any) => {
-  // console.log("props", props);
+interface Props {
+  posts: BlogPost[];
+}
 
+const Home: NextPage<Props> = (props) => {
   return (
     <>
-      {" "}
-      123 Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse tenetur eaque omnis eum rem. Ex voluptas, iste
-      aperiam eligendi magni harum minus iusto consectetur earum fugiat praesentium quos tenetur veniam.
+      <Head>
+        <title>Curious Programming</title>
+      </Head>
       <HomeInfoSection />
       <section>
         {/* List off posts */}
@@ -32,13 +38,9 @@ const Home: NextPage = (props: any) => {
             <Card
               title={current.title}
               key={current.title}
-              actionContent={
-                <LinkGradient
-                  label={current._id}
-                  href={"/post/" + current._id}
-                />
-              }
+              actionContent={<LinkGradient href={"/post/" + current._id}>Read More &raquo;</LinkGradient>}
             >
+              <div className=""> Published: {current.postedDate}</div>
               {current.ingress}
             </Card>
           ))}
@@ -52,7 +54,10 @@ export const getStaticProps: GetStaticProps = async () => {
   const query = '*[_type == "post"] {title, ingress, _id, _createdAt, _updatedAt}';
   // const params = { minSeats: 2 };
 
-  const posts: BlogPost[] = await sanityClient.fetch(query);
+  const posts: BlogPost[] = ((await sanityClient.fetch(query)) as BlogPost[]).map((current) => ({
+    ...current,
+    postedDate: format(new Date(current._createdAt), defaultDateFormat),
+  }));
 
   return {
     props: { posts: posts }, // will be passed to the page component as props

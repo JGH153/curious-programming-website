@@ -6,6 +6,7 @@ import { Header } from "../components/header";
 import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote } from "next-mdx-remote";
 import { MDXProvider } from "@mdx-js/react";
+import Head from "next/head";
 
 interface Author {
   name: string;
@@ -16,7 +17,6 @@ interface Author {
 
 interface Props {
   author: Author;
-  // mdx: any;
 }
 
 const About: NextPage<Props> = (props) => {
@@ -41,6 +41,9 @@ const About: NextPage<Props> = (props) => {
 
   return (
     <>
+      <Head>
+        <title>About - Curious Programming</title>
+      </Head>
       <section className="flex items-center justify-center space-y-4 flex-col-reverse md:flex-row">
         <div className="w-1/2 pa-4 flex flex-col space-y-4 p-4">
           <h1 className="text-3xl font-bold text-center">
@@ -82,9 +85,6 @@ export async function getStaticProps() {
     throw new Error("Author not found");
   }
 
-  const source = "Some **mdx** text, with a component";
-  const mdxSource = serialize(source);
-
   const authorSerialized = await Promise.all(
     author.map(async (current) => {
       return {
@@ -93,8 +93,6 @@ export async function getStaticProps() {
       };
     })
   );
-
-  const authorMdx = await Promise.all(authorSerialized);
 
   // Pass post data to the page via props
   return { props: { author: authorSerialized[0] } };

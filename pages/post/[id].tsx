@@ -2,20 +2,24 @@ import { NextPage } from "next";
 import { sanityClient } from "../../api/sanityClient";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
+import format from "date-fns/format";
 import Head from "next/head";
+import { defaultDateFormat } from "../../shared/dateHelpers";
 
-// todo move to shared
+// todo move to shared?
 interface BlogPost {
   title: string;
   ingress: string;
   imageUrl: string;
+  _createdAt: string;
+  postedDate: string;
   body: any[];
   _id: string;
 }
 
 const myPortableTextComponents = {
   block: {
-    h1: ({ children }: any) => <h1 className="text-3xl mt-10">{children}</h1>,
+    h1: ({ children }: any) => <h1 className="text-3xl mt-10 font-bold">{children}</h1>,
     h2: ({ children }: any) => <h1 className="text-2xl mt-6">{children}</h1>,
     h3: ({ children }: any) => <h1 className="text-xl mt-4">{children}</h1>,
     h4: ({ children }: any) => <h1 className="text-lg mt-3">{children}</h1>,
@@ -24,8 +28,6 @@ const myPortableTextComponents = {
 };
 
 const Post: NextPage<{ post: BlogPost }> = (props) => {
-  // console.log(props.post.imageUrl, "imageUrl");
-  // Render post...
   return (
     <>
       <Head>
@@ -43,6 +45,7 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
             objectFit={"contain"}
           />
         </div>
+        <div className=""> Published: {props.post.postedDate}</div>
         <PortableText
           value={props.post.body}
           components={myPortableTextComponents}
@@ -55,6 +58,7 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
 
 // This function gets called at build time
 export async function getStaticPaths() {
+  // move to API folder?
   const query = '*[_type == "post"] {title, ingress, _id, _createdAt, _updatedAt}';
   // const params = { minSeats: 2 };
 
@@ -80,7 +84,10 @@ export async function getStaticProps({ params }: any) {
   const query =
     '*[_type == "post" && _id == $postId] {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt}';
 
-  const posts: BlogPost[] = await sanityClient.fetch(query, { postId: params.id });
+  const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId: params.id })) as BlogPost[]).map((current) => ({
+    ...current,
+    postedDate: format(new Date(current._createdAt), defaultDateFormat),
+  }));
   if (posts.length !== 1) {
     // TODO
     throw new Error("Post not found");
