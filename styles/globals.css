@@ -56,3 +56,7 @@ a {
 .imageContainer {
   height: 30rem;
 }
+
+.imageContainer-short {
+  height: 20rem;
+}

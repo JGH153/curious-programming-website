@@ -26,7 +26,7 @@ export default {
       },
     },
     {
-      name: "boi",
+      name: "bio",
       title: "Bio",
       type: "markdown",
     },

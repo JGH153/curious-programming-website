@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 function About(props: { a: number }) {
-  console.log("a", props.a);
+  // console.log("a", props.a);
   const [val, toggle] = useState(1);
   return (
     <div>

@@ -48,7 +48,7 @@ export function HomeInfoSection() {
           {links.map((element) => (
             <a
               href={element.href}
-              className="flex items-center justify-center space-x-2"
+              className="flex items-center justify-center space-x-2 underlined"
               key={element.href}
             >
               <Image

@@ -1,7 +1,25 @@
+import { NextPage } from "next";
+import Image from "next/image";
 import React, { useState } from "react";
+import { sanityClient } from "../api/sanityClient";
 import { Header } from "../components/header";
+import { serialize } from "next-mdx-remote/serialize";
+import { MDXRemote } from "next-mdx-remote";
+import { MDXProvider } from "@mdx-js/react";
 
-function About(props: { a: number }) {
+interface Author {
+  name: string;
+  slug: string;
+  bio: any;
+  imageUrl: string;
+}
+
+interface Props {
+  author: Author;
+  // mdx: any;
+}
+
+const About: NextPage<Props> = (props) => {
   /*
   Clean up schema for author
   Get my author doc
@@ -10,35 +28,76 @@ function About(props: { a: number }) {
   https://www.smashingmagazine.com/2020/12/mdx-stored-sanity-next-js-website/
   */
 
-  console.log("a", props.a);
-  const [val, toggle] = useState(1);
+  /*
+  left and right side 50%
+  img on right
+  title(name) and text on left
+  */
+  // const [val, toggle] = useState(1);
+
+  const components: React.ComponentProps<typeof MDXProvider>["components"] = {
+    strong: (props: any) => <span className="font-bold">{props.children}</span>,
+  };
+
   return (
     <>
-      <div className="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg flex items-center space-x-4">
-        <div className="shrink-0">
-          <img
-            className="h-12 w-12"
-            src="https://tailwindcss.com/_next/static/media/classic-utility-jacket.0f108046e151c8576017eaf383406fe6.jpg"
-            alt="ChitChat Logo"
+      <section className="flex items-center justify-center space-y-4 flex-col-reverse md:flex-row">
+        <div className="w-1/2 pa-4 flex flex-col space-y-4 p-4">
+          <h1 className="text-3xl font-bold text-center">
+            <span className="font-normal">About:</span> {props.author.name}
+          </h1>
+          {/* <p>{props.author.bio}</p> */}
+          <MDXRemote
+            {...props.author.bio}
+            components={components}
           />
         </div>
-        <div>
-          <div className="text-xl font-medium text-black">ChitChat</div>
-          <p className="text-slate-500">You have a new message!</p>
+        <div className="w-1/2 px-2 lg:px-0">
+          <div className="container relative imageContainer-short mb-4">
+            <Image
+              src={props.author.imageUrl}
+              alt={props.author.name}
+              layout="fill"
+              objectFit={"contain"}
+            />
+          </div>
         </div>
-      </div>
+      </section>
     </>
   );
-}
+};
 
 // <a href="https://www.flaticon.com/free-icons/youtube" title="youtube icons">Youtube icons created by Freepik - Flaticon</a>
 // <a href="https://www.flaticon.com/free-icons/medium" title="medium icons">Medium icons created by Freepik - Flaticon</a>
 // <a href="https://www.flaticon.com/free-icons/twitter" title="twitter icons">Twitter icons created by Freepik - Flaticon</a>
 
 export async function getStaticProps() {
-  return {
-    props: { a: 1 }, // will be passed to the page component as props
-  };
+  const query =
+    '*[_type == "author" && _id == $gregerId] {name, slug, bio, "imageUrl": image.asset->url, _id, _createdAt, _updatedAt}';
+
+  // hardcoded ID for now
+  const author: Author[] = await sanityClient.fetch(query, { gregerId: "706a7fa2-21ca-4381-8087-dedd1bf099ca" });
+  if (author.length !== 1) {
+    // TODO
+    throw new Error("Author not found");
+  }
+
+  const source = "Some **mdx** text, with a component";
+  const mdxSource = serialize(source);
+
+  const authorSerialized = await Promise.all(
+    author.map(async (current) => {
+      return {
+        ...current,
+        bio: await serialize(current.bio),
+      };
+    })
+  );
+
+  const authorMdx = await Promise.all(authorSerialized);
+
+  // Pass post data to the page via props
+  return { props: { author: authorSerialized[0] } };
 }
 
 export default About;

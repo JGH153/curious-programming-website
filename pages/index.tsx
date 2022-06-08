@@ -17,7 +17,7 @@ interface BlogPost {
 }
 
 const Home: NextPage = (props: any) => {
-  console.log("props", props);
+  // console.log("props", props);
 
   return (
     <>
