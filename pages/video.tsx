@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import { useEffect } from "react";
 import { YoutubeCard } from "../components/YoutubeCard";
 import { Video } from "../shared/Video.interface";
@@ -22,7 +22,7 @@ const Video: NextPage<Props> = (props) => {
   );
 };
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
   const getVideos = async () => {
     const channelId = "UCVHumdPKnAbTFceoP-rD33g";
     const apiKey = process.env.YOUTUBE_API_KEY;
@@ -50,6 +50,6 @@ export async function getStaticProps() {
       videos: videos,
     },
   };
-}
+};
 
 export default Video;

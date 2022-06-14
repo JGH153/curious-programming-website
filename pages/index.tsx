@@ -1,16 +1,12 @@
 import { format } from "date-fns";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { sanityClient } from "../api/sanityClient";
-import { ButtonGradient } from "../components/ButtonGradient";
 import { Card } from "../components/Card";
-import { Header } from "../components/header";
 import { HomeInfoSection } from "../components/HomeInfoSection";
 import { LinkGradient } from "../components/LinkGradient";
+import { config } from "../shared/config";
 import { defaultDateFormat } from "../shared/dateHelpers";
-import styles from "../styles/Home.module.css";
 
 interface BlogPost {
   title: string;
@@ -60,7 +56,8 @@ export const getStaticProps: GetStaticProps = async () => {
   }));
 
   return {
-    props: { posts: posts }, // will be passed to the page component as props
+    props: { posts: posts },
+    revalidate: config.defaultRevalidateTime,
   };
 };
 

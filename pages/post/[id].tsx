@@ -1,10 +1,11 @@
-import { GetStaticProps, NextPage } from "next";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { sanityClient } from "../../api/sanityClient";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 import format from "date-fns/format";
 import Head from "next/head";
 import { defaultDateFormat } from "../../shared/dateHelpers";
+import { config } from "../../shared/config";
 
 // todo move to shared?
 interface BlogPost {
@@ -56,11 +57,9 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
   );
 };
 
-// This function gets called at build time
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   // move to API folder?
   const query = '*[_type == "post"] {title, ingress, _id, _createdAt, _updatedAt}';
-  // const params = { minSeats: 2 };
 
   const posts: BlogPost[] = await sanityClient.fetch(query);
 
@@ -72,7 +71,7 @@ export async function getStaticPaths() {
   // We'll pre-render only these paths at build time.
   // { fallback: false } means other routes should 404.
   return { paths, fallback: false };
-}
+};
 
 // This also gets called at build time
 export const getStaticProps: GetStaticProps = async (context) => {
@@ -96,7 +95,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   }
 
   // Pass post data to the page via props
-  return { props: { post: posts[0] }, revalidate: 1 };
+  return { props: { post: posts[0] }, revalidate: config.defaultRevalidateTime };
 };
 
 export default Post;

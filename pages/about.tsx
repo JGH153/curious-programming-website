@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import Image from "next/image";
 import React, { useState } from "react";
 import { sanityClient } from "../api/sanityClient";
@@ -7,6 +7,7 @@ import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote } from "next-mdx-remote";
 import { MDXProvider } from "@mdx-js/react";
 import Head from "next/head";
+import { config } from "../shared/config";
 
 interface Author {
   name: string;
@@ -74,7 +75,7 @@ const About: NextPage<Props> = (props) => {
 // <a href="https://www.flaticon.com/free-icons/medium" title="medium icons">Medium icons created by Freepik - Flaticon</a>
 // <a href="https://www.flaticon.com/free-icons/twitter" title="twitter icons">Twitter icons created by Freepik - Flaticon</a>
 
-export async function getStaticProps() {
+export const getStaticProps: GetStaticProps = async () => {
   const query =
     '*[_type == "author" && _id == $gregerId] {name, slug, bio, "imageUrl": image.asset->url, _id, _createdAt, _updatedAt}';
 
@@ -95,7 +96,7 @@ export async function getStaticProps() {
   );
 
   // Pass post data to the page via props
-  return { props: { author: authorSerialized[0] } };
-}
+  return { props: { author: authorSerialized[0] }, revalidate: config.defaultRevalidateTime };
+};
 
 export default About;
