@@ -1,11 +1,12 @@
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import { sanityClient } from "../../api/sanityClient";
+import { sanityClient } from "../../shared/sanityClient";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
 import format from "date-fns/format";
 import Head from "next/head";
 import { defaultDateFormat } from "../../shared/dateHelpers";
 import { config } from "../../shared/config";
+import { NewComment } from "../../components/NewComment";
 
 // todo move to shared?
 interface BlogPost {
@@ -51,8 +52,12 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
           value={props.post.body}
           components={myPortableTextComponents}
         />
+
+        {/* List of Comments */}
+
+        {/* TODO */}
+        {/* <NewComment postId={props.post._id} /> */}
       </div>
-      {/* TODO comments */}
     </>
   );
 };

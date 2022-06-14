@@ -1,12 +1,12 @@
 import { format } from "date-fns";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { sanityClient } from "../api/sanityClient";
 import { Card } from "../components/Card";
 import { HomeInfoSection } from "../components/HomeInfoSection";
 import { LinkGradient } from "../components/LinkGradient";
 import { config } from "../shared/config";
 import { defaultDateFormat } from "../shared/dateHelpers";
+import { sanityClient } from "../shared/sanityClient";
 
 interface BlogPost {
   title: string;

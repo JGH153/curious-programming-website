@@ -1,7 +1,7 @@
 import { GetStaticProps, NextPage } from "next";
 import Image from "next/image";
 import React, { useState } from "react";
-import { sanityClient } from "../api/sanityClient";
+import { sanityClient } from "../shared/sanityClient";
 import { Header } from "../components/header";
 import { serialize } from "next-mdx-remote/serialize";
 import { MDXRemote } from "next-mdx-remote";
