@@ -1,4 +1,4 @@
-import { NextPage } from "next";
+import { GetStaticProps, NextPage } from "next";
 import { sanityClient } from "../../api/sanityClient";
 import { PortableText } from "@portabletext/react";
 import Image from "next/image";
@@ -75,7 +75,7 @@ export async function getStaticPaths() {
 }
 
 // This also gets called at build time
-export async function getStaticProps({ params }: any) {
+export const getStaticProps: GetStaticProps = async (context) => {
   // params contains the post `id`.
   // If the route is like /posts/1, then params.id is 1
   // const res = await fetch(`https://.../posts/${params.id}`);
@@ -84,17 +84,19 @@ export async function getStaticProps({ params }: any) {
   const query =
     '*[_type == "post" && _id == $postId] {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt}';
 
-  const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId: params.id })) as BlogPost[]).map((current) => ({
-    ...current,
-    postedDate: format(new Date(current._createdAt), defaultDateFormat),
-  }));
+  const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId: context.params?.id ?? -1 })) as BlogPost[]).map(
+    (current) => ({
+      ...current,
+      postedDate: format(new Date(current._createdAt), defaultDateFormat),
+    })
+  );
   if (posts.length !== 1) {
     // TODO
     throw new Error("Post not found");
   }
 
   // Pass post data to the page via props
-  return { props: { post: posts[0] } };
-}
+  return { props: { post: posts[0] }, revalidate: 1 };
+};
 
 export default Post;
