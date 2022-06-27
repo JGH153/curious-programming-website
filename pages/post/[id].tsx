@@ -9,6 +9,7 @@ import { config } from "../../shared/config";
 import { NewComment } from "../../components/NewComment";
 import { CommentList } from "../../components/CommentList";
 import { Comment } from "../../shared/comment.interface";
+import { PostReactions } from "../../components/PostReactions";
 
 // todo move to shared?
 interface BlogPost {
@@ -55,7 +56,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
           components={myPortableTextComponents}
         />
 
-        {/* List of Comments */}
+        <PostReactions postId={props.post._id} />
 
         {/* newly added components not showing, TODO fore reload and refresh (on demand ISR?)? */}
         <CommentList
@@ -103,6 +104,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return posts;
   };
   const loadComments = async (postId: string) => {
+    // TODO  && approved == true
     const query =
       '*[_type == "comment" && postId == $postId] {postId, author, approved, body, _id, _createdAt, _updatedAt}';
 

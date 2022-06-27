@@ -1,16 +1,8 @@
 import { Comment } from "../shared/comment.interface";
 
-// input for my name? update on local storage changed?
 export function CommentList(props: { postId: string; comments: Comment[] }) {
-  // const comments: Comment[] = [
-  //   { comment: "This is a comment1", author: "John Doe" },
-  //   { comment: "This is a comment2", author: "Greger" },
-  //   { comment: "This is a comment3", author: "John Doe" },
-  // ];
-
   const ownAuthorName = "Greger";
 
-  // TODO timestamp as well
   const getComment = (comment: Comment) => {
     if (comment.author === ownAuthorName) {
       return (
