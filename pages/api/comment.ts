@@ -3,7 +3,6 @@ import { sanityClient } from "../../shared/sanityClient";
 import { sanityClientBackend } from "../../shared/sanityClientBackend";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
-  console.log(request.method);
   if (request.method === "GET") {
     response.status(200).json({
       comments: [],
@@ -11,6 +10,13 @@ export default async function handler(request: NextApiRequest, response: NextApi
   } else if (request.method === "POST") {
     // TODO make and save to sanity with approved = false
     // TODO add captcha?
+
+    if (request.body.comment.length > 1000) {
+      response.status(400).json({
+        error: "Comment is too long, max 1000 characters",
+      });
+      return;
+    }
 
     const doc = {
       _type: "comment",
@@ -21,14 +27,16 @@ export default async function handler(request: NextApiRequest, response: NextApi
     };
 
     const createdComment = await sanityClientBackend.create(doc);
-    console.log(`Comment was created, document ID is ${createdComment._id}`);
+
+    // force rebuild with new comment
+    await response.unstable_revalidate("/post/" + request.body.postId);
 
     response.status(200).json({
       status: "ok",
     });
   } else {
     response.status(400).json({
-      status: "Not OK man",
+      status: "Not OK",
     });
   }
 }

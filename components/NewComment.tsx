@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { httpClient } from "../shared/httpClient";
 import { ButtonGradient } from "./ButtonGradient";
@@ -13,27 +14,32 @@ import { LoadingSpinner } from "./LoadingSpinner";
 // }
 
 export function NewComment(props: { postId: string }) {
-  const [loading, isLoading] = useState(false);
+  const router = useRouter();
   const localStorageKey = "author";
+  const [loading, isLoading] = useState(false);
+  const [author, setAuthor] = useState("");
+  const [comment, setComment] = useState("");
 
   const onSubmit = async (form: React.FormEvent<HTMLFormElement>) => {
     // TODO spinner
     form.preventDefault();
+
+    if (author.length === 0 || comment.length === 0) {
+      return;
+    }
+
     isLoading(true);
     const response = await httpClient.post("/api/comment", { comment: comment, postId: props.postId, author });
     if (response.status === 200) {
       // TODO notification
       localStorage.setItem(localStorageKey, author);
       setComment("");
-      console.log("clear");
+      router.reload();
     } else {
       console.error(response.body);
     }
     isLoading(false);
   };
-
-  const [author, setAuthor] = useState("");
-  const [comment, setComment] = useState("");
 
   useEffect(() => {
     const storedValue = localStorage.getItem(localStorageKey) || "";
@@ -43,13 +49,13 @@ export function NewComment(props: { postId: string }) {
   return (
     <div className="">
       <form onSubmit={onSubmit}>
-        <h1 className="mt-10 text-3xl font-bold">New Comment on {props.postId}:</h1>
+        <h1 className="mt-10 text-3xl font-bold">Add a new comment:</h1>
         {/* TODO improve */}
         {loading && <LoadingSpinner />}
         {/* <InputMarkdown /> */}
         <input
           type="text"
-          className="text-black mt-4 p-2 rounded-md"
+          className="text-black mt-4 p-2 rounded-md w-full md:w-1/2"
           placeholder="Author"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
@@ -62,7 +68,9 @@ export function NewComment(props: { postId: string }) {
         ></textarea>
 
         {/* TODO disabled if no text */}
-        {comment.length > 0 && <ButtonGradient disabled={comment.length === 0}>Add Comment</ButtonGradient>}
+        {comment.length > 0 && author.length > 0 && (
+          <ButtonGradient disabled={comment.length === 0}>Add Comment</ButtonGradient>
+        )}
       </form>
     </div>
   );

@@ -32,7 +32,6 @@ const myPortableTextComponents = {
 };
 
 const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
-  console.log(props.comments);
   return (
     <>
       <Head>
