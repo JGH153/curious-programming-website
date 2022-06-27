@@ -7,6 +7,8 @@ import Head from "next/head";
 import { defaultDateFormat } from "../../shared/dateHelpers";
 import { config } from "../../shared/config";
 import { NewComment } from "../../components/NewComment";
+import { CommentList } from "../../components/CommentList";
+import { Comment } from "../../shared/comment.interface";
 
 // todo move to shared?
 interface BlogPost {
@@ -29,7 +31,8 @@ const myPortableTextComponents = {
   },
 };
 
-const Post: NextPage<{ post: BlogPost }> = (props) => {
+const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
+  console.log(props.comments);
   return (
     <>
       <Head>
@@ -55,8 +58,12 @@ const Post: NextPage<{ post: BlogPost }> = (props) => {
 
         {/* List of Comments */}
 
-        {/* TODO */}
-        {/* <NewComment postId={props.post._id} /> */}
+        {/* newly added components not showing, TODO fore reload and refresh (on demand ISR?)? */}
+        <CommentList
+          postId={props.post._id}
+          comments={props.comments}
+        />
+        <NewComment postId={props.post._id} />
       </div>
     </>
   );
@@ -80,27 +87,49 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 // This also gets called at build time
 export const getStaticProps: GetStaticProps = async (context) => {
+  const loadPost = async (postId: string) => {
+    const query =
+      '*[_type == "post" && _id == $postId] {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt}';
+
+    const posts: BlogPost[] = (
+      (await sanityClient.fetch(query, { postId: context.params?.id ?? -1 })) as BlogPost[]
+    ).map((current) => ({
+      ...current,
+      postedDate: format(new Date(current._createdAt), defaultDateFormat),
+    }));
+    if (posts.length !== 1) {
+      // TODO
+      throw new Error("Post not found");
+    }
+    return posts;
+  };
+  const loadComments = async (postId: string) => {
+    const query =
+      '*[_type == "comment" && postId == $postId] {postId, author, approved, body, _id, _createdAt, _updatedAt}';
+
+    const comments: Comment[] = ((await sanityClient.fetch(query, { postId })) as Comment[]).map((current) => ({
+      ...current,
+      postedDate: format(new Date(current._createdAt), defaultDateFormat),
+    }));
+
+    return comments;
+  };
   // params contains the post `id`.
   // If the route is like /posts/1, then params.id is 1
   // const res = await fetch(`https://.../posts/${params.id}`);
   // const post = await res.json();
 
-  const query =
-    '*[_type == "post" && _id == $postId] {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt}';
-
-  const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId: context.params?.id ?? -1 })) as BlogPost[]).map(
-    (current) => ({
-      ...current,
-      postedDate: format(new Date(current._createdAt), defaultDateFormat),
-    })
-  );
-  if (posts.length !== 1) {
-    // TODO
+  if (Array.isArray(context.params?.id)) {
     throw new Error("Post not found");
   }
 
+  const posts = await loadPost(context.params?.id ?? "-1");
+  const comments = await loadComments(context.params?.id ?? "-1");
+
+  // LOAD comments
+
   // Pass post data to the page via props
-  return { props: { post: posts[0] }, revalidate: config.defaultRevalidateTime };
+  return { props: { post: posts[0], comments }, revalidate: config.defaultRevalidateTime };
 };
 
 export default Post;

@@ -11,7 +11,12 @@ module.exports = {
         "secondary-dark": "rgb(63, 51, 81)",
         "accent-dark": "rgb(63, 51, 81)",
         "contrast-dark": "rgb(233, 166, 166)",
+        "chat-dark": "#3E4042",
+        "chat-blue": "#0084FF",
       },
+      scale: {
+        '300': '3.00',
+      }
     },
   },
   plugins: [],
