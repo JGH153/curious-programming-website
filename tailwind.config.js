@@ -13,6 +13,7 @@ module.exports = {
         "contrast-dark": "rgb(233, 166, 166)",
         "chat-dark": "#3E4042",
         "chat-blue": "#0084FF",
+        "active-orange": "#d78e28",
       },
       scale: {
         '300': '3.00',

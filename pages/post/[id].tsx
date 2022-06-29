@@ -10,6 +10,7 @@ import { NewComment } from "../../components/NewComment";
 import { CommentList } from "../../components/CommentList";
 import { Comment } from "../../shared/comment.interface";
 import { PostReactions } from "../../components/PostReactions";
+import { Reaction } from "../../shared/Reaction.interface";
 
 // todo move to shared?
 interface BlogPost {
@@ -20,6 +21,10 @@ interface BlogPost {
   postedDate: string;
   body: any[];
   _id: string;
+
+  fireReactions: number;
+  surprisedReactions: number;
+  mehReactions: number;
 }
 
 const myPortableTextComponents = {
@@ -33,6 +38,12 @@ const myPortableTextComponents = {
 };
 
 const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
+  const reactions: Reaction[] = [
+    { emoji: "🔥", count: props.post.fireReactions },
+    { emoji: "😲", count: props.post.surprisedReactions },
+    { emoji: "😒", count: props.post.mehReactions },
+  ];
+
   return (
     <>
       <Head>
@@ -56,7 +67,10 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
           components={myPortableTextComponents}
         />
 
-        <PostReactions postId={props.post._id} />
+        <PostReactions
+          postId={props.post._id}
+          reactions={reactions}
+        />
 
         {/* newly added components not showing, TODO fore reload and refresh (on demand ISR?)? */}
         <CommentList
@@ -89,7 +103,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const loadPost = async (postId: string) => {
     const query =
-      '*[_type == "post" && _id == $postId] {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt}';
+      '*[_type == "post" && _id == $postId] | order(_createdAt asc) {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
     const posts: BlogPost[] = (
       (await sanityClient.fetch(query, { postId: context.params?.id ?? -1 })) as BlogPost[]
@@ -106,7 +120,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const loadComments = async (postId: string) => {
     // TODO  && approved == true
     const query =
-      '*[_type == "comment" && postId == $postId] {postId, author, approved, body, _id, _createdAt, _updatedAt}';
+      '*[_type == "comment" && postId == $postId] | order(_createdAt asc) {postId, author, approved, body, _id, _createdAt, _updatedAt} ';
 
     const comments: Comment[] = ((await sanityClient.fetch(query, { postId })) as Comment[]).map((current) => ({
       ...current,

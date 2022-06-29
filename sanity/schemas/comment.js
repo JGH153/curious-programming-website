@@ -25,6 +25,10 @@ export default {
     },
   ],
 
+  initialValue: {
+    approved: false
+  },
+
   preview: {
     select: {
       title: "author",

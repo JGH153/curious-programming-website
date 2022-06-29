@@ -25,14 +25,14 @@ export default async function handler(request: NextApiRequest, response: NextApi
       body: request.body.comment,
     };
 
-    const createdComment = await sanityClientBackend.create(doc);
+    const newDoc = await sanityClientBackend.create(doc);
 
     // force rebuild with new comment
     // TODO does not seem to work?
-    await response.unstable_revalidate("/post/" + request.body.postId);
+    await response.revalidate("/post/" + request.body.postId);
 
     response.status(200).json({
-      status: "ok",
+      ...newDoc,
     });
   } else {
     response.status(400).json({

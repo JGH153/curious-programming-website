@@ -23,6 +23,7 @@ export function NewComment(props: { postId: string }) {
   const onSubmit = async (form: React.FormEvent<HTMLFormElement>) => {
     // TODO spinner
     form.preventDefault();
+    router.reload();
 
     if (author.length === 0 || comment.length === 0) {
       return;

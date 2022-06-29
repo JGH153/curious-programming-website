@@ -52,6 +52,24 @@ export default {
       title: "Body",
       type: "blockContent",
     },
+    {
+      name: "fireReactions",
+      title: "Fire reactions",
+      type: "number",
+      initialValue: 0,
+    },
+    {
+      name: "surprisedReactions",
+      title: "Surprised reactions",
+      type: "number",
+      initialValue: 0,
+    },
+    {
+      name: "mehReactions",
+      title: "Meh reactions",
+      type: "number",
+      initialValue: 0,
+    },
   ],
 
   preview: {

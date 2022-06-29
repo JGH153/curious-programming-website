@@ -47,7 +47,7 @@ const Home: NextPage<Props> = (props) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const query = '*[_type == "post"] {title, ingress, _id, _createdAt, _updatedAt}';
+  const query = '*[_type == "post"] | order(_createdAt asc) {title, ingress, _id, _createdAt, _updatedAt}';
   // const params = { minSeats: 2 };
 
   const posts: BlogPost[] = ((await sanityClient.fetch(query)) as BlogPost[]).map((current) => ({
