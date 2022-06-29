@@ -55,8 +55,26 @@ a {
 
 .imageContainer {
   height: 30rem;
+  margin: auto;
 }
 
 .imageContainer-short {
   height: 20rem;
+}
+
+::-webkit-scrollbar {
+  width: 0.9rem;
+}
+
+::-webkit-scrollbar-track {
+  background: #424242;
+}
+
+::-webkit-scrollbar-thumb {
+  /* For progress: box-shadow: 0 -100vh 0 100vh #0084FF, 0 0 0px 0px black; */
+  background: #686868;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7b7b7b;
 }

@@ -53,12 +53,12 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
         <h1 className="text-6xl text-left mb-8">{props.post.title}</h1>
         <p className="pb-6">{props.post.ingress}</p>
         {/* TODO improve image */}
-        <div className="container relative imageContainer mb-4">
+        <div className="container relative imageContainer rounded-lg mb-4 overflow-hidden">
           <Image
             src={props.post.imageUrl}
             alt={props.post.title}
             layout="fill"
-            objectFit={"contain"}
+
           />
         </div>
         <div className=""> Published: {props.post.postedDate}</div>
