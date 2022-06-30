@@ -21,9 +21,7 @@ export function NewComment(props: { postId: string }) {
   const [comment, setComment] = useState("");
 
   const onSubmit = async (form: React.FormEvent<HTMLFormElement>) => {
-    // TODO spinner
     form.preventDefault();
-    router.reload();
 
     if (author.length === 0 || comment.length === 0) {
       return;
@@ -51,7 +49,6 @@ export function NewComment(props: { postId: string }) {
     <div className="">
       <form onSubmit={onSubmit}>
         <h1 className="mt-10 text-3xl font-bold">Add a new comment:</h1>
-        {/* TODO improve */}
         {loading && <LoadingSpinner />}
         {/* <InputMarkdown /> */}
         <input
