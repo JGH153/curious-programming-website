@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Video } from "../shared/Video.interface";
 
 interface Props {
@@ -13,9 +14,9 @@ export function YoutubeCard(props: Props) {
     >
       <div className="flex justify-center">
         <div className="flex flex-col md:flex-row rounded-xl bg-white shadow-lg">
-					{/* TODO fix */}
+          {/* TODO fix */}
           <img
-            className="w-full h-96 md:h-auto object-cover rounded-t-lg md:rounded-none md:rounded-l-lg"
+            className="w-full md:h-auto  rounded-t-lg md:rounded-none md:rounded-l-lg"
             src={props.video.thumbnail}
             alt=""
           />

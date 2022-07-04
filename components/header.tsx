@@ -29,8 +29,8 @@ export function Header() {
         <nav className="text-primary mx-auto flex max-w-8xl items-center justify-between">
           <div>
             <Link href={"/"}>
-              <a className="text-primary underlined focus:outline-none block whitespace-nowrap text-3xl md:text-4xl lg:text-5xl font-medium transition">
-                Curious Programming 🤔
+              <a className="text-primary underlined focus:outline-none block whitespace-nowrap text-xl sm:text-3xl md:text-4xl lg:text-5xl font-medium transition">
+                Curious Programming <span className="hidden sm:inline-block">🤔</span> 
               </a>
             </Link>
           </div>

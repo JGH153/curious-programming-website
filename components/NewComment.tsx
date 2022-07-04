@@ -1,5 +1,7 @@
+import LogRocket from "logrocket";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { config } from "../shared/config";
 import { httpClient } from "../shared/httpClient";
 import { ButtonGradient } from "./ButtonGradient";
 import { LoadingSpinner } from "./LoadingSpinner";
@@ -32,6 +34,9 @@ export function NewComment(props: { postId: string }) {
     if (response.status === 200) {
       // TODO notification
       localStorage.setItem(localStorageKey, author);
+      LogRocket.identify(config.logRocketProject, {
+        name: author,
+      });
       setComment("");
       router.reload();
     } else {

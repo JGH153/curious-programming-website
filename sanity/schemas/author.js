@@ -9,6 +9,16 @@ export default {
       type: "string",
     },
     {
+      name: "title",
+      title: "Title",
+      type: "string",
+    },
+    {
+      name: "email",
+      title: "Email",
+      type: "string",
+    },
+    {
       name: "slug",
       title: "Slug",
       type: "slug",
@@ -34,6 +44,7 @@ export default {
   preview: {
     select: {
       title: "name",
+      subtitle: "title",
       media: "image",
     },
   },

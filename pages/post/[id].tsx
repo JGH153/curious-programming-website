@@ -1,16 +1,18 @@
-import { GetStaticPaths, GetStaticProps, NextPage } from "next";
-import { sanityClient } from "../../shared/sanityClient";
+// TODO fix
+/* eslint-disable @next/next/no-img-element */
 import { PortableText } from "@portabletext/react";
-import Image from "next/image";
 import format from "date-fns/format";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { defaultDateFormat } from "../../shared/dateHelpers";
-import { config } from "../../shared/config";
-import { NewComment } from "../../components/NewComment";
 import { CommentList } from "../../components/CommentList";
-import { Comment } from "../../shared/comment.interface";
+import { NewComment } from "../../components/NewComment";
+import { PostAuthor } from "../../components/PostAuthor";
 import { PostReactions } from "../../components/PostReactions";
+import { Comment } from "../../shared/comment.interface";
+import { config } from "../../shared/config";
+import { defaultDateFormat } from "../../shared/dateHelpers";
 import { Reaction } from "../../shared/Reaction.interface";
+import { sanityClient } from "../../shared/sanityClient";
 
 // todo move to shared?
 interface BlogPost {
@@ -52,16 +54,28 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
       <div>
         <h1 className="text-6xl text-left mb-8">{props.post.title}</h1>
         <p className="pb-6">{props.post.ingress}</p>
-        {/* TODO improve image */}
-        <div className="container relative imageContainer rounded-lg mb-4 overflow-hidden">
+        {/* TODO improve image (does not handle scale down well) */}
+        {/* <div className="container relative imageContainer rounded-lg mb-4 overflow-hidden max-w-7xl">
           <Image
             src={props.post.imageUrl}
             alt={props.post.title}
             layout="fill"
-
           />
-        </div>
+        </div> */}
+        <img
+          className="rounded-lg mb-4 "
+          src={props.post.imageUrl}
+          alt={props.post.title}
+        ></img>
+
         <div className=""> Published: {props.post.postedDate}</div>
+        {/* TODO correct data + email */}
+        <PostAuthor
+          name="Jan Greger Hemb"
+          title="Lead Front End Solution Architect"
+          imageUrl="https://cdn.sanity.io/images/p3gew69c/production/c2f0618d184e9ebcda96ddddb19ec1bed5e64835-2510x2511.jpg"
+        />
+
         <PortableText
           value={props.post.body}
           components={myPortableTextComponents}

@@ -49,7 +49,7 @@ a {
 .underlined:hover:after,
 .underlined:focus:after,
 .active.underlined:after {
-  background-color: currentColor;
+  background-color: white;
   transform: scaleX(1);
 }
 
