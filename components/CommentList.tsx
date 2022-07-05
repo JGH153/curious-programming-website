@@ -32,7 +32,7 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
 
   return (
     <div className="mt-16">
-      <h1 className="text-3xl font-bold">Comments:</h1>
+      <h1 className="text-3xl font-bold text-center">Comments:</h1>
       <div className="">{props.comments.map((comment) => getComment(comment))}</div>
     </div>
   );
