@@ -4,6 +4,7 @@ import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import probe from "probe-image-size";
+import { useEffect, useRef, useState } from "react";
 import { CommentList } from "../../components/CommentList";
 import { NewComment } from "../../components/NewComment";
 import { PostAuthor } from "../../components/PostAuthor";
@@ -45,6 +46,23 @@ const myPortableTextComponents = {
 };
 
 const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
+  const [myUserName, setMyUserName] = useState("");
+  const isFirstRun = useRef(true);
+
+  const loadLastUserName = () => {
+    const storedValue = localStorage.getItem(config.localStorageKeys.myUserName) || "";
+    setMyUserName(storedValue);
+  };
+
+  useEffect(() => {
+    if (isFirstRun.current) {
+      loadLastUserName();
+      isFirstRun.current = false;
+      return;
+    }
+    localStorage.setItem(config.localStorageKeys.myUserName, myUserName);
+  }, [myUserName]);
+
   const reactions: Reaction[] = [
     { emoji: "🔥", count: props.post.fireReactions },
     { emoji: "😲", count: props.post.surprisedReactions },
@@ -88,10 +106,15 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
 
         {/* newly added components not showing, TODO fore reload and refresh (on demand ISR?)? */}
         <CommentList
+          myUserName={myUserName}
           postId={props.post._id}
           comments={props.comments}
         />
-        <NewComment postId={props.post._id} />
+        <NewComment
+          postId={props.post._id}
+          myUserName={myUserName}
+          setMyUserName={setMyUserName}
+        />
       </div>
     </>
   );

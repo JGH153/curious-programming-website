@@ -1,10 +1,9 @@
+import { useEffect, useState } from "react";
 import { Comment } from "../shared/comment.interface";
 
-export function CommentList(props: { postId: string; comments: Comment[] }) {
-  const ownAuthorName = "Greger";
-
+export function CommentList(props: { postId: string; comments: Comment[]; myUserName: string }) {
   const getComment = (comment: Comment) => {
-    if (comment.author === ownAuthorName) {
+    if (comment.author === props.myUserName) {
       return (
         <div
           className="flex justify-end flex-col items-end"

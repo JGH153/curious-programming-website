@@ -1,5 +1,4 @@
-// This file is required by next for linting
-// https://nextjs.org/docs/basic-features/eslint
+// This file is the config for lint-staged and what is executed by the husky hook
 const path = require("path");
 
 const buildEslintCommand = (filenames) =>

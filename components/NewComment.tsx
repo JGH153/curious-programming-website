@@ -6,49 +6,46 @@ import { httpClient } from "../shared/httpClient";
 import { ButtonGradient } from "./ButtonGradient";
 import { LoadingSpinner } from "./LoadingSpinner";
 
-// function useLocalStorage(key: string, initialValue: string): [string, (newValue: string) => void] {
-//   const storedValue = localStorage.getItem(key) || initialValue;
-//   const setValue = (newValue: string) => {
-//     localStorage.setItem(key, newValue);
-//   };
-
-//   return [storedValue, setValue];
-// }
-
-export function NewComment(props: { postId: string }) {
+export function NewComment(props: { postId: string; myUserName: string; setMyUserName: (newValue: string) => void }) {
   const router = useRouter();
-  const localStorageKey = "author";
+  const showMessageOnReloadKey = "delayedMessage";
   const [loading, isLoading] = useState(false);
-  const [author, setAuthor] = useState("");
   const [comment, setComment] = useState("");
+
+  useEffect(() => {
+    const storedMessage = sessionStorage.getItem(showMessageOnReloadKey);
+    if (storedMessage && storedMessage.length > 0) {
+      alert(storedMessage);
+      sessionStorage.removeItem(showMessageOnReloadKey);
+    }
+  }, []);
 
   const onSubmit = async (form: React.FormEvent<HTMLFormElement>) => {
     form.preventDefault();
 
-    if (author.length === 0 || comment.length === 0) {
+    if (props.myUserName.length === 0 || comment.length === 0) {
       return;
     }
 
     isLoading(true);
-    const response = await httpClient.post("/api/comment", { comment: comment, postId: props.postId, author });
+    const response = await httpClient.post("/api/comment", {
+      comment: comment,
+      postId: props.postId,
+      author: props.myUserName,
+    });
     if (response.status === 200) {
       // TODO notification
-      localStorage.setItem(localStorageKey, author);
       LogRocket.identify(config.logRocketProject, {
-        name: author,
+        name: props.myUserName,
       });
-      setComment("");
+      sessionStorage.setItem(showMessageOnReloadKey, "Comment added ✔️");
+      setComment(""); // bit redundant with reload
       router.reload();
     } else {
       console.error(response.body);
     }
     isLoading(false);
   };
-
-  useEffect(() => {
-    const storedValue = localStorage.getItem(localStorageKey) || "";
-    setAuthor(storedValue);
-  }, []);
 
   return (
     <div className="">
@@ -60,8 +57,8 @@ export function NewComment(props: { postId: string }) {
           type="text"
           className="text-black mt-4 p-2 rounded-md w-full md:w-1/2"
           placeholder="Author"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
+          value={props.myUserName}
+          onChange={(e) => props.setMyUserName(e.target.value)}
         />
         <textarea
           className="w-full h-40 p-2 my-4 text-black rounded-md"
@@ -71,7 +68,7 @@ export function NewComment(props: { postId: string }) {
         ></textarea>
 
         {/* TODO disabled if no text */}
-        {comment.length > 0 && author.length > 0 && (
+        {comment.length > 0 && props.myUserName.length > 0 && (
           <ButtonGradient disabled={comment.length === 0}>Add Comment</ButtonGradient>
         )}
       </form>
