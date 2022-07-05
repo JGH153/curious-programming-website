@@ -1,4 +1,5 @@
 import { GetStaticProps, NextPage } from "next";
+import probe from "probe-image-size";
 import { useEffect } from "react";
 import { YoutubeCard } from "../components/YoutubeCard";
 import { Video } from "../shared/Video.interface";
@@ -30,14 +31,21 @@ export const getStaticProps: GetStaticProps = async () => {
       `https://content-youtube.googleapis.com/youtube/v3/search?channelId=${channelId}&key=${apiKey}&maxResults=50&order=date&part=snippet`
     );
     const data = await response.json();
-    const videos = data.items
-      .filter((current: any) => current.id.kind === "youtube#video")
-      .map((current: any) => ({
-        id: current.id.videoId,
-        title: current.snippet.title,
-        description: current.snippet.description,
-        thumbnail: current.snippet.thumbnails.medium.url,
-      }));
+    const videos: Video[] = await Promise.all(
+      data.items
+        .filter((current: any) => current.id.kind === "youtube#video")
+        .map(async (current: any) => {
+          let result = await probe(current.snippet.thumbnails.medium.url);
+          return {
+            id: current.id.videoId,
+            title: current.snippet.title,
+            description: current.snippet.description,
+            thumbnail: current.snippet.thumbnails.medium.url,
+            thumbnailWidth: result.width,
+            thumbnailHeight: result.height,
+          };
+        })
+    );
 
     // https://img.youtube.com/vi/kkAmJsXuBLw/0.jpg
     return videos;

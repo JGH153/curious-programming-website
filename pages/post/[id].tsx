@@ -1,9 +1,9 @@
-// TODO fix
-/* eslint-disable @next/next/no-img-element */
 import { PortableText } from "@portabletext/react";
 import format from "date-fns/format";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
+import Image from "next/image";
+import probe from "probe-image-size";
 import { CommentList } from "../../components/CommentList";
 import { NewComment } from "../../components/NewComment";
 import { PostAuthor } from "../../components/PostAuthor";
@@ -23,6 +23,8 @@ interface BlogPost {
   postedDate: string;
   body: any[];
   _id: string;
+  imageWidth: number;
+  imageHeight: number;
 
   fireReactions: number;
   surprisedReactions: number;
@@ -54,19 +56,13 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
       <div>
         <h1 className="text-6xl text-left mb-8">{props.post.title}</h1>
         <p className="pb-6">{props.post.ingress}</p>
-        {/* TODO improve image (does not handle scale down well) */}
-        {/* <div className="container relative imageContainer rounded-lg mb-4 overflow-hidden max-w-7xl">
-          <Image
-            src={props.post.imageUrl}
-            alt={props.post.title}
-            layout="fill"
-          />
-        </div> */}
-        <img
-          className="rounded-lg mb-4 "
+        <Image
+          className="rounded-lg mb-4"
           src={props.post.imageUrl}
           alt={props.post.title}
-        ></img>
+          width={props.post.imageWidth}
+          height={props.post.imageHeight}
+        />
 
         <div className=""> Published: {props.post.postedDate}</div>
         {/* TODO correct data + email */}
@@ -129,7 +125,13 @@ export const getStaticProps: GetStaticProps = async (context) => {
       // TODO
       throw new Error("Post not found");
     }
-    return posts;
+    const post = posts[0];
+
+    let result = await probe(post.imageUrl);
+    post.imageWidth = result.width;
+    post.imageHeight = result.height;
+
+    return post;
   };
   const loadComments = async (postId: string) => {
     // TODO  && approved == true
@@ -152,13 +154,13 @@ export const getStaticProps: GetStaticProps = async (context) => {
     throw new Error("Post not found");
   }
 
-  const posts = await loadPost(context.params?.id ?? "-1");
+  const post = await loadPost(context.params?.id ?? "-1");
   const comments = await loadComments(context.params?.id ?? "-1");
 
   // LOAD comments
 
   // Pass post data to the page via props
-  return { props: { post: posts[0], comments }, revalidate: config.defaultRevalidateTime };
+  return { props: { post, comments }, revalidate: config.defaultRevalidateTime };
 };
 
 export default Post;

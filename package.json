@@ -19,6 +19,7 @@
     "logrocket": "^3.0.1",
     "next": "12.2.x",
     "next-mdx-remote": "^4.0.3",
+    "probe-image-size": "^7.2.3",
     "react": "18.0.x",
     "react-dom": "18.0.x"
   },
