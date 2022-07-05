@@ -50,7 +50,6 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
     { emoji: "😲", count: props.post.surprisedReactions },
     { emoji: "😒", count: props.post.mehReactions },
   ];
-  console.log(props.post);
 
   return (
     <>
