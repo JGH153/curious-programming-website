@@ -1,6 +1,7 @@
 import Image from "next/image";
 
 export function PostAuthor(props: { name: string; title: string; email: string; imageUrl: string }) {
+  console.log("hello");
   return (
     <div className="flex ">
       <div className="rounded-full overflow-hidden">
