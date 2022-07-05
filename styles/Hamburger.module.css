@@ -22,7 +22,7 @@
 
 .hamburger-middle {
   transform: translateY(7px) scaleX(1);
-  transition: transform 0.20s ease;
+  transition: transform 0.2s ease;
 }
 
 .hamburger-bottom {

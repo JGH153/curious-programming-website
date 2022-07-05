@@ -16,8 +16,8 @@ module.exports = {
         "active-orange": "#d78e28",
       },
       scale: {
-        '300': '3.00',
-      }
+        300: "3.00",
+      },
     },
   },
   plugins: [],

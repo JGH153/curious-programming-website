@@ -26,7 +26,7 @@ export default {
   ],
 
   initialValue: {
-    approved: false
+    approved: false,
   },
 
   preview: {

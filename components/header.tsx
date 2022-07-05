@@ -30,7 +30,7 @@ export function Header() {
           <div>
             <Link href={"/"}>
               <a className="text-primary underlined focus:outline-none block whitespace-nowrap text-xl sm:text-3xl md:text-4xl lg:text-5xl font-medium transition">
-                Curious Programming <span className="hidden sm:inline-block">🤔</span> 
+                Curious Programming <span className="hidden sm:inline-block">🤔</span>
               </a>
             </Link>
           </div>

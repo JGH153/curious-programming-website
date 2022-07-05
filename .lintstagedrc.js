@@ -6,5 +6,5 @@ const buildEslintCommand = (filenames) =>
   `npm run lint-strict -- --fix --file ${filenames.map((f) => path.relative(process.cwd(), f)).join(" --file ")}`;
 
 module.exports = {
-  "*.{js,jsx,ts,tsx}": ["npm run prettier-fix", buildEslintCommand],
+  "*.{js,jsx,ts,tsx}": [buildEslintCommand],
 };
