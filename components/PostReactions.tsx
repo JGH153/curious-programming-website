@@ -7,9 +7,8 @@ export function PostReactions(props: { postId: string; reactions: Reaction[] }) 
   const [lastVotedEmoji, setLastVotedEmoji] = useState("");
 
   const addReaction = async (emoji: string) => {
-    // TODO api
-    // save selection to local storage?
-    // how to limit 1 time pr article?
+    // save selection to local storage? TODO
+    // how to limit 1 time pr article? TODO
     if (selectedEmoji === emoji) {
       setSelectedEmoji("");
       setLastVotedEmoji("");

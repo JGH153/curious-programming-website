@@ -8,6 +8,7 @@ import { CommentList } from "../../components/CommentList";
 import { NewComment } from "../../components/NewComment";
 import { PostAuthor } from "../../components/PostAuthor";
 import { PostReactions } from "../../components/PostReactions";
+import { Author } from "../../shared/author.interface";
 import { Comment } from "../../shared/comment.interface";
 import { config } from "../../shared/config";
 import { defaultDateFormat } from "../../shared/dateHelpers";
@@ -19,6 +20,8 @@ interface BlogPost {
   title: string;
   ingress: string;
   imageUrl: string;
+  author: Author;
+  authorImgUrl: string;
   _createdAt: string;
   postedDate: string;
   body: any[];
@@ -47,6 +50,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
     { emoji: "😲", count: props.post.surprisedReactions },
     { emoji: "😒", count: props.post.mehReactions },
   ];
+  console.log(props.post);
 
   return (
     <>
@@ -65,11 +69,12 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
         />
 
         <div className=""> Published: {props.post.postedDate}</div>
-        {/* TODO correct data + email */}
+        {/* TODO correct image */}
         <PostAuthor
-          name="Jan Greger Hemb"
-          title="Lead Front End Solution Architect"
-          imageUrl="https://cdn.sanity.io/images/p3gew69c/production/c2f0618d184e9ebcda96ddddb19ec1bed5e64835-2510x2511.jpg"
+          name={props.post.author.name}
+          title={props.post.author.title}
+          email={props.post.author.email}
+          imageUrl={props.post.authorImgUrl}
         />
 
         <PortableText
@@ -109,15 +114,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
   return { paths, fallback: false };
 };
 
-// This also gets called at build time
 export const getStaticProps: GetStaticProps = async (context) => {
   const loadPost = async (postId: string) => {
+    // TODO how to request author image url inside author?
     const query =
-      '*[_type == "post" && _id == $postId] | order(_createdAt asc) {title, ingress, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
+      '*[_type == "post" && _id == $postId] | order(_createdAt asc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
-    const posts: BlogPost[] = (
-      (await sanityClient.fetch(query, { postId: context.params?.id ?? -1 })) as BlogPost[]
-    ).map((current) => ({
+    const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId })) as BlogPost[]).map((current) => ({
       ...current,
       postedDate: format(new Date(current._createdAt), defaultDateFormat),
     }));

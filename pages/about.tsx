@@ -8,13 +8,7 @@ import { MDXRemote } from "next-mdx-remote";
 import { MDXProvider } from "@mdx-js/react";
 import Head from "next/head";
 import { config } from "../shared/config";
-
-interface Author {
-  name: string;
-  slug: string;
-  bio: any;
-  imageUrl: string;
-}
+import { Author } from "../shared/author.interface";
 
 interface Props {
   author: Author;

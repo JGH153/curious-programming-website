@@ -10,8 +10,6 @@ export function Layout({ children }: { children: ReactNode }) {
   // move?
   useEffect(() => {
     if (typeof window !== "undefined") {
-      console.log("LogRocket: Initializing");
-      // TODO globals
       LogRocket.init(config.logRocketProject);
     }
   });
