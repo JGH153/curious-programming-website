@@ -1,7 +1,9 @@
 import { GetStaticProps, NextPage } from "next";
+import Head from "next/head";
 import probe from "probe-image-size";
 import { useEffect } from "react";
 import { YoutubeCard } from "../components/YoutubeCard";
+import { config } from "../shared/config";
 import { Video } from "../shared/Video.interface";
 
 interface Props {
@@ -11,6 +13,13 @@ interface Props {
 const Video: NextPage<Props> = (props) => {
   return (
     <>
+    <Head>
+        <title>Youtube Videos - {config.metaTags.title}</title>
+        <meta
+          name="description"
+          content={"List of videos for Curious Programming"}
+        />
+      </Head>
       <div className="flex flex-col space-y-4">
         {props.videos.map((video) => (
           <YoutubeCard

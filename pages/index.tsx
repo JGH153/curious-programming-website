@@ -24,7 +24,11 @@ const Home: NextPage<Props> = (props) => {
   return (
     <>
       <Head>
-        <title>Curious Programming</title>
+        <title>{config.metaTags.title}</title>
+        <meta
+          name="description"
+          content={config.metaTags.mainDescription}
+        />
       </Head>
       <HomeInfoSection />
       <section>

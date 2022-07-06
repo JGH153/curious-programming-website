@@ -5,20 +5,26 @@ import { config } from "../shared/config";
 import { httpClient } from "../shared/httpClient";
 import { ButtonGradient } from "./ButtonGradient";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Notification } from "./Notification";
 
 export function NewComment(props: { postId: string; myUserName: string; setMyUserName: (newValue: string) => void }) {
   const router = useRouter();
   const showMessageOnReloadKey = "delayedMessage";
   const [loading, isLoading] = useState(false);
   const [comment, setComment] = useState("");
+  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
 
   useEffect(() => {
     const storedMessage = sessionStorage.getItem(showMessageOnReloadKey);
-    if (storedMessage && storedMessage.length > 0) {
-      alert(storedMessage);
-      sessionStorage.removeItem(showMessageOnReloadKey);
+    if (storedMessage && storedMessage === "true") {
+      setShowSuccessNotification(true);
     }
   }, []);
+
+  const removeNotification = () => {
+    setShowSuccessNotification(false);
+    sessionStorage.removeItem(showMessageOnReloadKey);
+  };
 
   const onSubmit = async (form: React.FormEvent<HTMLFormElement>) => {
     form.preventDefault();
@@ -34,11 +40,11 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
       author: props.myUserName,
     });
     if (response.status === 200) {
-      // TODO notification
       LogRocket.identify(config.logRocketProject, {
         name: props.myUserName,
       });
-      sessionStorage.setItem(showMessageOnReloadKey, "Comment added ✔️");
+      // consider a TTL so it is gone on page navigation
+      sessionStorage.setItem(showMessageOnReloadKey, "true");
       setComment(""); // bit redundant with reload
       router.reload();
     } else {
@@ -49,6 +55,9 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
 
   return (
     <div className="">
+      {showSuccessNotification && (
+        <Notification onClick={() => removeNotification()}>Comment added successfully ✔️</Notification>
+      )}
       <form onSubmit={onSubmit}>
         <h1 className="mt-10 text-3xl font-bold">Add a new comment:</h1>
         {loading && <LoadingSpinner />}

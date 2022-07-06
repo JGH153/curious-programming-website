@@ -15,21 +15,6 @@ interface Props {
 }
 
 const About: NextPage<Props> = (props) => {
-  /*
-  Clean up schema for author
-  Get my author doc
-  display it
-  Make it work with a component with MDX
-  https://www.smashingmagazine.com/2020/12/mdx-stored-sanity-next-js-website/
-  */
-
-  /*
-  left and right side 50%
-  img on right
-  title(name) and text on left
-  */
-  // const [val, toggle] = useState(1);
-
   const components: React.ComponentProps<typeof MDXProvider>["components"] = {
     strong: (props: any) => <span className="font-bold">{props.children}</span>,
   };
@@ -37,14 +22,28 @@ const About: NextPage<Props> = (props) => {
   return (
     <>
       <Head>
-        <title>About - Curious Programming</title>
+        <title>
+          About: {props.author.name} - {config.metaTags.title}
+        </title>
+        <meta
+          name="description"
+          content={`About: ${props.author.name} - ${props.author.title}`}
+        />
       </Head>
       <section className="flex items-center justify-center space-y-4 flex-col-reverse md:flex-row">
         <div className="w-1/2 pa-4 flex flex-col space-y-4 p-4">
           <h1 className="text-3xl font-bold text-center">
-            <span className="font-normal">About:</span> {props.author.name}
+            <a
+              href={"mailto:" + props.author.email}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="font-normal">About:</span> {props.author.name}
+            </a>
           </h1>
-          {/* <p>{props.author.bio}</p> */}
+          <h2 className="text-xl font-bold text-center">
+            <span className="font-normal">Title:</span> {props.author.title}
+          </h2>
           <MDXRemote
             {...props.author.bio}
             components={components}
@@ -71,7 +70,7 @@ const About: NextPage<Props> = (props) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const query =
-    '*[_type == "author" && _id == $gregerId] {name, slug, bio, "imageUrl": image.asset->url, _id, _createdAt, _updatedAt}';
+    '*[_type == "author" && _id == $gregerId] {name, slug, title, email, bio, "imageUrl": image.asset->url, _id, _createdAt, _updatedAt}';
 
   // hardcoded ID for now
   const author: Author[] = await sanityClient.fetch(query, { gregerId: "706a7fa2-21ca-4381-8087-dedd1bf099ca" });

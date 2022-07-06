@@ -72,7 +72,26 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
   return (
     <>
       <Head>
-        <title>{props.post.title} - Curious Programming</title>
+        {/* Meta and open graph meta tags (FB for example) */}
+        <title>
+          {props.post.title} - {config.metaTags.title}
+        </title>
+        <meta
+          name="description"
+          content={`${props.post.ingress} written by ${props.post.author.name}`}
+        />
+        <meta
+          property="og:title"
+          content={`${props.post.title} - ${config.metaTags.title}`}
+        />
+        <meta
+          property="og:type"
+          content="article"
+        />
+        <meta
+          property="og:description"
+          content={`${props.post.ingress} written by ${props.post.author.name}`}
+        />
       </Head>
       <div>
         <h1 className="text-6xl text-left mb-8">{props.post.title}</h1>
@@ -84,27 +103,21 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
           width={props.post.imageWidth}
           height={props.post.imageHeight}
         />
-
         <div className=""> Published: {props.post.postedDate}</div>
-        {/* TODO correct image */}
         <PostAuthor
           name={props.post.author.name}
           title={props.post.author.title}
           email={props.post.author.email}
           imageUrl={props.post.authorImgUrl}
         />
-
         <PortableText
           value={props.post.body}
           components={myPortableTextComponents}
         />
-
         <PostReactions
           postId={props.post._id}
           reactions={reactions}
         />
-
-        {/* newly added components not showing, TODO fore reload and refresh (on demand ISR?)? */}
         <CommentList
           myUserName={myUserName}
           postId={props.post._id}
