@@ -1,9 +1,9 @@
 import { format } from "date-fns";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { Card } from "../components/Card";
+import { BlogPostCard } from "../components/BlogPostCard";
 import { HomeInfoSection } from "../components/HomeInfoSection";
-import { LinkGradient } from "../components/LinkGradient";
+import { Category } from "../shared/Category.interface";
 import { config } from "../shared/config";
 import { defaultDateFormat } from "../shared/dateHelpers";
 import { sanityClient } from "../shared/sanityClient";
@@ -12,6 +12,7 @@ interface BlogPost {
   title: string;
   ingress: string;
   postedDate: string;
+  categories: Category[];
   _id: string;
   _createdAt: string;
 }
@@ -35,14 +36,15 @@ const Home: NextPage<Props> = (props) => {
         {/* List off posts */}
         <div className="flex flex-col space-y-4">
           {props.posts.map((current: BlogPost) => (
-            <Card
+            <BlogPostCard
               title={current.title}
-              key={current.title}
-              actionContent={<LinkGradient href={"/post/" + current._id}>Read More &raquo;</LinkGradient>}
+              id={current._id}
+              categories={current.categories}
+              key={current._id}
             >
               <div className=""> Published: {current.postedDate}</div>
               {current.ingress}
-            </Card>
+            </BlogPostCard>
           ))}
         </div>
       </section>
@@ -51,8 +53,8 @@ const Home: NextPage<Props> = (props) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const query = '*[_type == "post"] | order(_createdAt asc) {title, ingress, _id, _createdAt, _updatedAt}';
-  // const params = { minSeats: 2 };
+  const query =
+    '*[_type == "post"] | order(_createdAt asc) {title, ingress, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
 
   const posts: BlogPost[] = ((await sanityClient.fetch(query)) as BlogPost[]).map((current) => ({
     ...current,

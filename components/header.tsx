@@ -35,7 +35,7 @@ export function Header() {
             </Link>
           </div>
           <ul className="hidden md:flex">
-            {pages.map((page, i) => (
+            {pages.map((page) => (
               <li
                 className="px-5 py-2"
                 key={page.label}
