@@ -1,8 +1,10 @@
 import { format } from "date-fns";
 import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { BlogPostCard } from "../../components/BlogPostCard";
 import { HomeInfoSection } from "../../components/HomeInfoSection";
+import { LoadingNewPage } from "../../components/LoadingNewPage";
 import { Category } from "../../shared/Category.interface";
 import { config } from "../../shared/config";
 import { defaultDateFormat } from "../../shared/dateHelpers";
@@ -20,15 +22,24 @@ interface BlogPost {
 interface Props {
   posts: BlogPost[];
   activeCategory: Category;
+  notFound: boolean;
 }
 
 const CategoryPage: NextPage<Props> = (props) => {
+  const router = useRouter();
+
+  if (props.notFound) {
+    return <h1 className="text-4xl text-center">Category not found</h1>;
+  }
+
+  if (router.isFallback) {
+    return <LoadingNewPage />;
+  }
+
   return (
     <>
       <Head>
-        <title>
-          {props.activeCategory.title} - {config.metaTags.title}
-        </title>
+        <title>{`${props.activeCategory.title} - ${config.metaTags.title}`}</title>
         <meta
           name="description"
           content={config.metaTags.mainDescription}
@@ -65,7 +76,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { id: post.slug.current },
   }));
 
-  return { paths, fallback: false };
+  return { paths, fallback: true };
 };
 
 //[count((categories[]->slug.current)[@ in ["design-system"]]) > 0
@@ -81,10 +92,18 @@ export const getStaticProps: GetStaticProps = async (context) => {
     postedDate: format(new Date(current._createdAt), defaultDateFormat),
   }));
 
-  const activeCategory = posts[0]?.categories.find((current) => current.slug.current === context.params?.id);
+  const getActiveCategory = (posts: BlogPost[]) => {
+    if (posts.length === 0) {
+      return null;
+    }
+    return posts[0]?.categories.find((current) => current.slug.current === context.params?.id);
+  };
+
+  const activeCategory = getActiveCategory(posts);
+  const notFound = activeCategory === null;
 
   return {
-    props: { posts: posts, activeCategory },
+    props: { posts, activeCategory, notFound },
     revalidate: config.defaultRevalidateTime,
   };
 };

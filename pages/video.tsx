@@ -13,8 +13,8 @@ interface Props {
 const Video: NextPage<Props> = (props) => {
   return (
     <>
-    <Head>
-        <title>Youtube Videos - {config.metaTags.title}</title>
+      <Head>
+        <title>{`Youtube Videos - ${config.metaTags.title}`}</title>
         <meta
           name="description"
           content={"List of videos for Curious Programming"}

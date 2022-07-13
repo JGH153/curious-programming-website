@@ -3,9 +3,11 @@ import format from "date-fns/format";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import probe from "probe-image-size";
 import { useEffect, useRef, useState } from "react";
 import { CommentList } from "../../components/CommentList";
+import { LoadingNewPage } from "../../components/LoadingNewPage";
 import { NewComment } from "../../components/NewComment";
 import { PostAuthor } from "../../components/PostAuthor";
 import { PostReactions } from "../../components/PostReactions";
@@ -45,9 +47,11 @@ const myPortableTextComponents = {
   },
 };
 
-const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
+const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }> = (props) => {
   const [myUserName, setMyUserName] = useState("");
   const isFirstRun = useRef(true);
+
+  const router = useRouter();
 
   const loadLastUserName = () => {
     const storedValue = localStorage.getItem(config.localStorageKeys.myUserName) || "";
@@ -64,18 +68,24 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
   }, [myUserName]);
 
   const reactions: Reaction[] = [
-    { emoji: "🔥", count: props.post.fireReactions },
-    { emoji: "😲", count: props.post.surprisedReactions },
-    { emoji: "😒", count: props.post.mehReactions },
+    { emoji: "🔥", count: props.post?.fireReactions ?? 0 },
+    { emoji: "😲", count: props.post?.surprisedReactions ?? 0 },
+    { emoji: "😒", count: props.post?.mehReactions ?? 0 },
   ];
+
+  if (props.notFound) {
+    return <h1 className="text-4xl text-center">Post not found</h1>;
+  }
+
+  if (router.isFallback) {
+    return <LoadingNewPage />;
+  }
 
   return (
     <>
       <Head>
         {/* Meta and open graph meta tags (FB for example) */}
-        <title>
-          {props.post.title} - {config.metaTags.title}
-        </title>
+        <title>{`${props.post.title} - ${config.metaTags.title}`}</title>
         <meta
           name="description"
           content={`${props.post.ingress} written by ${props.post.author.name}`}
@@ -114,6 +124,16 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
           value={props.post.body}
           components={myPortableTextComponents}
         />
+
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/uk1pWPNWofk"
+          title="YouTube video player"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+
         <PostReactions
           postId={props.post._id}
           reactions={reactions}
@@ -144,9 +164,8 @@ export const getStaticPaths: GetStaticPaths = async () => {
     params: { id: post._id },
   }));
 
-  // We'll pre-render only these paths at build time.
-  // { fallback: false } means other routes should 404.
-  return { paths, fallback: false };
+  // fallback -> router.isFallback if 404
+  return { paths, fallback: true };
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
@@ -160,8 +179,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
       postedDate: format(new Date(current._createdAt), defaultDateFormat),
     }));
     if (posts.length !== 1) {
-      // TODO
-      throw new Error("Post not found");
+      return null;
     }
     const post = posts[0];
 
@@ -194,11 +212,12 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const post = await loadPost(context.params?.id ?? "-1");
   const comments = await loadComments(context.params?.id ?? "-1");
+  const notFound = post === null;
 
   // LOAD comments
 
   // Pass post data to the page via props
-  return { props: { post, comments }, revalidate: config.defaultRevalidateTime };
+  return { props: { post, comments, notFound }, revalidate: config.defaultRevalidateTime };
 };
 
 export default Post;
