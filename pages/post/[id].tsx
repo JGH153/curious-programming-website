@@ -95,7 +95,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[] }> = (props) => {
       </Head>
       <div>
         <h1 className="text-6xl text-left mb-8">{props.post.title}</h1>
-        <p className="pb-6">{props.post.ingress}</p>
+        <p className="pb-6 text-lg">{props.post.ingress}</p>
         <Image
           className="rounded-lg mb-4"
           src={props.post.imageUrl}

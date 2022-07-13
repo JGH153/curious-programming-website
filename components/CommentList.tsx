@@ -24,7 +24,7 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
           <div className="pl-3 py-1">
             {comment.author} (at {comment.postedDate}):
           </div>
-          <div className="rounded-3xl bg-chat-dark px-3 py-2 w-max  w-max max-w-fit">{comment.body}</div>
+          <div className="rounded-3xl bg-chat-dark px-3 py-2 w-max max-w-fit">{comment.body}</div>
         </div>
       );
     }
@@ -33,6 +33,7 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
   return (
     <div className="mt-16">
       <h1 className="text-3xl font-bold text-center">Comments:</h1>
+      {props.comments.length === 0 && <h2 className="text-center text-xl">No comments yet</h2>}
       <div className="">{props.comments.map((comment) => getComment(comment))}</div>
     </div>
   );

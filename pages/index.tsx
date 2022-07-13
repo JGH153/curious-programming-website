@@ -41,10 +41,9 @@ const Home: NextPage<Props> = (props) => {
               id={current._id}
               categories={current.categories}
               key={current._id}
-            >
-              <div className=""> Published: {current.postedDate}</div>
-              {current.ingress}
-            </BlogPostCard>
+              postedDate={current.postedDate}
+              ingress={current.ingress}
+            />
           ))}
         </div>
       </section>
@@ -54,7 +53,7 @@ const Home: NextPage<Props> = (props) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const query =
-    '*[_type == "post"] | order(_createdAt asc) {title, ingress, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
+    '*[_type == "post"] | order(_createdAt desc) {title, ingress, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
 
   const posts: BlogPost[] = ((await sanityClient.fetch(query)) as BlogPost[]).map((current) => ({
     ...current,

@@ -8,6 +8,7 @@ export default {
       name: "title",
       title: "Title",
       type: "string",
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "slug",
@@ -17,17 +18,20 @@ export default {
         source: "title",
         maxLength: 96,
       },
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "ingress",
       title: "Ingress",
       type: "string",
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "author",
       title: "Author",
       type: "reference",
       to: { type: "author" },
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "mainImage",
@@ -36,6 +40,7 @@ export default {
       options: {
         hotspot: true,
       },
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "categories",
@@ -52,24 +57,28 @@ export default {
       name: "body",
       title: "Body",
       type: "blockContent",
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "fireReactions",
       title: "Fire reactions",
       type: "number",
       initialValue: 0,
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "surprisedReactions",
       title: "Surprised reactions",
       type: "number",
       initialValue: 0,
+      validation: (Rule) => Rule.required(),
     },
     {
       name: "mehReactions",
       title: "Meh reactions",
       type: "number",
       initialValue: 0,
+      validation: (Rule) => Rule.required(),
     },
   ],
 

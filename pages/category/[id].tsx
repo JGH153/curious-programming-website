@@ -1,0 +1,92 @@
+import { format } from "date-fns";
+import type { GetStaticPaths, GetStaticProps, NextPage } from "next";
+import Head from "next/head";
+import { BlogPostCard } from "../../components/BlogPostCard";
+import { HomeInfoSection } from "../../components/HomeInfoSection";
+import { Category } from "../../shared/Category.interface";
+import { config } from "../../shared/config";
+import { defaultDateFormat } from "../../shared/dateHelpers";
+import { sanityClient } from "../../shared/sanityClient";
+
+interface BlogPost {
+  title: string;
+  ingress: string;
+  postedDate: string;
+  categories: Category[];
+  _id: string;
+  _createdAt: string;
+}
+
+interface Props {
+  posts: BlogPost[];
+  activeCategory: Category;
+}
+
+const CategoryPage: NextPage<Props> = (props) => {
+  return (
+    <>
+      <Head>
+        <title>
+          {props.activeCategory.title} - {config.metaTags.title}
+        </title>
+        <meta
+          name="description"
+          content={config.metaTags.mainDescription}
+        />
+      </Head>
+      <h1 className="text-center my-8 text-4xl">
+        All pots with category: <span className="font-bold">{props.activeCategory.title}</span>
+      </h1>
+      <section>
+        {/* List off posts */}
+        <div className="flex flex-col space-y-4">
+          {props.posts.map((current: BlogPost) => (
+            <BlogPostCard
+              title={current.title}
+              id={current._id}
+              categories={current.categories}
+              key={current._id}
+              postedDate={current.postedDate}
+              ingress={current.ingress}
+            />
+          ))}
+        </div>
+      </section>
+    </>
+  );
+};
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const query = '*[_type == "category"] {slug}';
+
+  const posts: Category[] = await sanityClient.fetch(query);
+
+  const paths = posts.map((post) => ({
+    params: { id: post.slug.current },
+  }));
+
+  return { paths, fallback: false };
+};
+
+//[count((categories[]->slug.current)[@ in ["design-system"]]) > 0
+// categories[]->slug.current == "design-system"
+export const getStaticProps: GetStaticProps = async (context) => {
+  const query =
+    '*[_type == "post" && count((categories[]->slug.current)[@ in [$currentCategories]]) > 0 ] | order(_createdAt asc) {title, ingress, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
+
+  const posts: BlogPost[] = (
+    (await sanityClient.fetch(query, { currentCategories: context.params?.id })) as BlogPost[]
+  ).map((current) => ({
+    ...current,
+    postedDate: format(new Date(current._createdAt), defaultDateFormat),
+  }));
+
+  const activeCategory = posts[0]?.categories.find((current) => current.slug.current === context.params?.id);
+
+  return {
+    props: { posts: posts, activeCategory },
+    revalidate: config.defaultRevalidateTime,
+  };
+};
+
+export default CategoryPage;

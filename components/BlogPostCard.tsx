@@ -6,12 +6,16 @@ export function BlogPostCard({
   title,
   id,
   categories,
+  postedDate,
+  ingress,
   children,
 }: {
   title: string;
   id: string;
   categories: Category[];
-  children: ReactNode;
+  postedDate: string;
+  ingress: string;
+  children?: ReactNode;
 }) {
   // https://flowbite.com/docs/components/card/
   return (
@@ -24,7 +28,11 @@ export function BlogPostCard({
           <a>
             <div className="p-6 rounded-lg rounded-b-none border border-b-0 shadow-md bg-gray-800 border-gray-700">
               <h5 className="mb-2 text-2xl font-bold tracking-tight text-white">{title}</h5>
-              <div className="mb-3 font-normal text-gray-400">{children}</div>
+              <div className="mb-3 font-normal text-gray-400">
+                <div className=""> Published: {postedDate}</div>
+                {ingress}
+                {children}
+              </div>
             </div>
           </a>
         </Link>
