@@ -11,6 +11,7 @@ import { LoadingNewPage } from "../../components/LoadingNewPage";
 import { NewComment } from "../../components/NewComment";
 import { PostAuthor } from "../../components/PostAuthor";
 import { PostReactions } from "../../components/PostReactions";
+import { YoutubeVideo } from "../../components/YoutubeVideo";
 import { Author } from "../../shared/author.interface";
 import { Comment } from "../../shared/comment.interface";
 import { config } from "../../shared/config";
@@ -31,6 +32,7 @@ interface BlogPost {
   _id: string;
   imageWidth: number;
   imageHeight: number;
+  youtubeVideo: string;
 
   fireReactions: number;
   surprisedReactions: number;
@@ -104,7 +106,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
         />
       </Head>
       <div>
-        <h1 className="text-6xl text-left mb-8">{props.post.title}</h1>
+        <h1 className="text-4xl md:text-5xl lg:text-6xl text-left mb-8">{props.post.title}</h1>
         <p className="pb-6 text-lg">{props.post.ingress}</p>
         <Image
           className="rounded-lg mb-4"
@@ -125,14 +127,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
           components={myPortableTextComponents}
         />
 
-        <iframe
-          width="560"
-          height="315"
-          src="https://www.youtube.com/embed/uk1pWPNWofk"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
+        {props.post.youtubeVideo && <YoutubeVideo id={props.post.youtubeVideo} />}
 
         <PostReactions
           postId={props.post._id}
@@ -172,7 +167,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const loadPost = async (postId: string) => {
     // TODO how to request author image url inside author?
     const query =
-      '*[_type == "post" && _id == $postId] | order(_createdAt asc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
+      '*[_type == "post" && _id == $postId] | order(_createdAt asc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
     const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId })) as BlogPost[]).map((current) => ({
       ...current,

@@ -60,6 +60,15 @@ export default {
       validation: (Rule) => Rule.required(),
     },
     {
+      name: "youtubeVideo",
+      title: "Youtube Video Code",
+      type: "string",
+      validation: (Rule) => [
+        Rule.min(11, "Min 11 characters"),
+        Rule.max(11, "Max 11 characters"),
+      ]
+    },
+    {
       name: "fireReactions",
       title: "Fire reactions",
       type: "number",
