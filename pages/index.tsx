@@ -13,6 +13,10 @@ interface BlogPost {
   ingress: string;
   postedDate: string;
   categories: Category[];
+  fireReactions: number;
+  surprisedReactions: number;
+  mehReactions: number;
+  sumReactions: number;
   _id: string;
   _createdAt: string;
 }
@@ -43,6 +47,7 @@ const Home: NextPage<Props> = (props) => {
               key={current._id}
               postedDate={current.postedDate}
               ingress={current.ingress}
+              sumReactions={current.sumReactions}
             />
           ))}
         </div>
@@ -53,11 +58,13 @@ const Home: NextPage<Props> = (props) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const query =
-    '*[_type == "post"] | order(_createdAt desc) {title, ingress, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
+    '*[_type == "post"] | order(_createdAt desc) {title, ingress, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
 
   const posts: BlogPost[] = ((await sanityClient.fetch(query)) as BlogPost[]).map((current) => ({
     ...current,
     postedDate: format(new Date(current._createdAt), defaultDateFormat),
+    sumReactions: current.fireReactions + current.surprisedReactions + current.mehReactions,
+    // sumComments: 0, // TODO
   }));
 
   return {

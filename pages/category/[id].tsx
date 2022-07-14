@@ -15,6 +15,10 @@ interface BlogPost {
   ingress: string;
   postedDate: string;
   categories: Category[];
+  fireReactions: number;
+  surprisedReactions: number;
+  mehReactions: number;
+  sumReactions: number;
   _id: string;
   _createdAt: string;
 }
@@ -59,6 +63,7 @@ const CategoryPage: NextPage<Props> = (props) => {
               key={current._id}
               postedDate={current.postedDate}
               ingress={current.ingress}
+              sumReactions={current.sumReactions}
             />
           ))}
         </div>
@@ -83,13 +88,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // categories[]->slug.current == "design-system"
 export const getStaticProps: GetStaticProps = async (context) => {
   const query =
-    '*[_type == "post" && count((categories[]->slug.current)[@ in [$currentCategories]]) > 0 ] | order(_createdAt asc) {title, ingress, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
+    '*[_type == "post" && count((categories[]->slug.current)[@ in [$currentCategories]]) > 0 ] | order(_createdAt desc) {title, ingress, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
 
   const posts: BlogPost[] = (
     (await sanityClient.fetch(query, { currentCategories: context.params?.id })) as BlogPost[]
   ).map((current) => ({
     ...current,
     postedDate: format(new Date(current._createdAt), defaultDateFormat),
+    sumReactions: current.fireReactions + current.surprisedReactions + current.mehReactions,
   }));
 
   const getActiveCategory = (posts: BlogPost[]) => {

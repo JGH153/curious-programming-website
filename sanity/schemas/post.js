@@ -48,11 +48,11 @@ export default {
       type: "array",
       of: [{ type: "reference", to: { type: "category" } }],
     },
-    {
-      name: "publishedAt",
-      title: "Published at",
-      type: "datetime",
-    },
+    // {
+    //   name: "publishedAt",
+    //   title: "Published at",
+    //   type: "datetime",
+    // },
     {
       name: "body",
       title: "Body",
@@ -63,16 +63,14 @@ export default {
       name: "youtubeVideo",
       title: "Youtube Video Code",
       type: "string",
-      validation: (Rule) => [
-        Rule.min(11, "Min 11 characters"),
-        Rule.max(11, "Max 11 characters"),
-      ]
+      validation: (Rule) => [Rule.min(11, "Min 11 characters"), Rule.max(11, "Max 11 characters")],
     },
     {
       name: "fireReactions",
       title: "Fire reactions",
       type: "number",
       initialValue: 0,
+      hidden: true,
       validation: (Rule) => Rule.required(),
     },
     {
@@ -80,6 +78,7 @@ export default {
       title: "Surprised reactions",
       type: "number",
       initialValue: 0,
+      hidden: true,
       validation: (Rule) => Rule.required(),
     },
     {
@@ -87,6 +86,7 @@ export default {
       title: "Meh reactions",
       type: "number",
       initialValue: 0,
+      hidden: true,
       validation: (Rule) => Rule.required(),
     },
   ],

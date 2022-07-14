@@ -167,7 +167,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const loadPost = async (postId: string) => {
     // TODO how to request author image url inside author?
     const query =
-      '*[_type == "post" && _id == $postId] | order(_createdAt asc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
+      '*[_type == "post" && _id == $postId] | order(_createdAt desc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
     const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId })) as BlogPost[]).map((current) => ({
       ...current,
