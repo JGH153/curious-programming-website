@@ -4,7 +4,7 @@ import { ReactNode, useEffect } from "react";
 import { Footer } from "./Footer";
 import { Header } from "./header";
 import LogRocket from "logrocket";
-import { config } from "../shared/config";
+import { config } from "../../shared/config";
 
 export function Layout({ children }: { children: ReactNode }) {
   // move?

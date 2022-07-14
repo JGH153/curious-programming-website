@@ -1,14 +1,13 @@
-import { GetStaticProps, NextPage } from "next";
-import Image from "next/image";
-import React, { useState } from "react";
-import { sanityClient } from "../shared/sanityClient";
-import { Header } from "../components/header";
-import { serialize } from "next-mdx-remote/serialize";
-import { MDXRemote } from "next-mdx-remote";
 import { MDXProvider } from "@mdx-js/react";
+import { GetStaticProps, NextPage } from "next";
+import { MDXRemote } from "next-mdx-remote";
+import { serialize } from "next-mdx-remote/serialize";
 import Head from "next/head";
-import { config } from "../shared/config";
+import Image from "next/image";
+import React from "react";
 import { Author } from "../shared/author.interface";
+import { config } from "../shared/config";
+import { sanityClient } from "../shared/sanityClient";
 
 interface Props {
   author: Author;

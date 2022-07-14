@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useState } from "react";
-import { HamburgerButton } from "./HamburgerButton";
+import { HamburgerButton } from "../HamburgerButton";
 
 interface PageItem {
   href: string;
