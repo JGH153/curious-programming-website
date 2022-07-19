@@ -7,13 +7,6 @@ import LogRocket from "logrocket";
 import { config } from "../../shared/config";
 
 export function Layout({ children }: { children: ReactNode }) {
-  // move?
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      LogRocket.init(config.logRocketProject);
-    }
-  });
-
   return (
     <>
       {/* For recaptcha enterprise */}

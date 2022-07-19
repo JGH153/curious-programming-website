@@ -1,4 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { config } from "../../shared/config";
+import { httpClient } from "../../shared/httpClient";
 import { sanityClientBackend } from "../../shared/sanityClientBackend";
 
 const emojiToName = (emoji: string) => {
@@ -22,17 +24,39 @@ export default async function handler(request: NextApiRequest, response: NextApi
       request.body.change > 1 ||
       request.body.change < -1
     ) {
-      response.status(400).json({
+      return response.status(400).json({
         error: "Need both postId and emoji",
       });
-      return;
     }
+
     const emojiName = emojiToName(request.body.emoji);
     if (emojiName === null) {
-      response.status(400).json({
+      return response.status(400).json({
         error: "Unknown emoji",
       });
-      return;
+    }
+
+    if (!request.body.recaptchaToken) {
+      return response.status(400).json({
+        error: "No recaptcha token provided",
+      });
+    }
+
+    const recaptchaResponse = await httpClient.postString(
+      "https://www.google.com/recaptcha/api/siteverify ",
+      `secret=${process.env.RECAPTCHA_SECRET}&response=${request.body.recaptchaToken}`
+    );
+
+    if (!recaptchaResponse.ok || !recaptchaResponse.body.success) {
+      return response.status(400).json({
+        error: "Recaptcha failed",
+      });
+    }
+
+    if (recaptchaResponse.body.score < 0.5) {
+      return response.status(400).json({
+        error: config.apiErrors.tooLowRecaptchaScore,
+      });
     }
 
     const result = await sanityClientBackend

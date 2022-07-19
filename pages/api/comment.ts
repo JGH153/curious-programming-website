@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { sanityClientBackend } from "../../shared/sanityClientBackend";
+import { httpClient } from "../../shared/httpClient";
+import { config } from "../../shared/config";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   if (request.method === "GET") {
@@ -10,9 +12,36 @@ export default async function handler(request: NextApiRequest, response: NextApi
     // TODO make and save to sanity with approved = false
     // TODO add captcha?
 
+    // TODO cleaner list of validators
     if (request.body.comment.length > 1000) {
       response.status(400).json({
         error: "Comment is too long, max 1000 characters",
+      });
+      return;
+    }
+
+    if (!request.body.recaptchaToken) {
+      response.status(400).json({
+        error: "No recaptcha token provided",
+      });
+      return;
+    }
+
+    const recaptchaResponse = await httpClient.postString(
+      "https://www.google.com/recaptcha/api/siteverify ",
+      `secret=${process.env.RECAPTCHA_SECRET}&response=${request.body.recaptchaToken}`
+    );
+
+    if (!recaptchaResponse.ok || !recaptchaResponse.body.success) {
+      response.status(400).json({
+        error: "Recaptcha failed",
+      });
+      return;
+    }
+
+    if (recaptchaResponse.body.score < 0.5) {
+      response.status(400).json({
+        error: config.apiErrors.tooLowRecaptchaScore,
       });
       return;
     }

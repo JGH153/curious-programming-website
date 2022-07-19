@@ -44,7 +44,6 @@ export function BlogPostCard({
             {/* <div>{sumComments} comments</div> */}
           </div>
           <div className="flex space-x-2">
-            {/* TODO create page */}
             {categories.map((current) => (
               <Link
                 href={"/category/" + current.slug.current}

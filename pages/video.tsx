@@ -65,6 +65,7 @@ export const getStaticProps: GetStaticProps = async () => {
   return {
     props: {
       videos: videos,
+      revalidate: config.defaultRevalidateTime,
     },
   };
 };
