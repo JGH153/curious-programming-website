@@ -18,6 +18,9 @@ import { config } from "../../shared/config";
 import { defaultDateFormat } from "../../shared/dateHelpers";
 import { Reaction } from "../../shared/Reaction.interface";
 import { sanityClient } from "../../shared/sanityClient";
+import type { PortableTextBlock, ArbitraryTypedObject } from "@portabletext/types";
+import { PortableTextCode } from "../../components/portable-text/PortableTextCode";
+import { PortableTextImage } from "../../components/portable-text/PortableTextImage";
 
 // todo move to shared?
 interface BlogPost {
@@ -28,7 +31,7 @@ interface BlogPost {
   authorImgUrl: string;
   _createdAt: string;
   postedDate: string;
-  body: any[];
+  body: PortableTextBlock[];
   _id: string;
   imageWidth: number;
   imageHeight: number;
@@ -46,6 +49,10 @@ const myPortableTextComponents = {
     h3: ({ children }: any) => <h1 className="text-xl mt-4">{children}</h1>,
     h4: ({ children }: any) => <h1 className="text-lg mt-3">{children}</h1>,
     normal: ({ children }: any) => <p className="pt-3 pb-0">{children}</p>,
+  },
+  types: {
+    code: PortableTextCode,
+    image: PortableTextImage,
   },
 };
 
@@ -74,6 +81,25 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
     { emoji: "😲", count: props.post?.surprisedReactions ?? 0 },
     { emoji: "😒", count: props.post?.mehReactions ?? 0 },
   ];
+
+  const getPortableText = (elements: any[]): string => {
+    const sum = elements.reduce((total: number, currentElement) => {
+      let elementText = "";
+      if (currentElement.children) {
+        elementText += getPortableText(currentElement.children) + " ";
+      }
+      if (currentElement.text && currentElement.text.length > 0) {
+        elementText += currentElement.text + " ";
+      }
+      return total + elementText;
+    }, 0);
+
+    return sum;
+  };
+
+  // TODO useMemo or something
+  const wordsInText = getPortableText(props.post.body).split(" ").length;
+  const minToRead = Math.ceil(wordsInText / config.readSpeedWPM);
 
   if (props.notFound) {
     return <h1 className="text-4xl text-center">Post not found</h1>;
@@ -115,7 +141,9 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
           width={props.post.imageWidth}
           height={props.post.imageHeight}
         />
-        <div className=""> Published: {props.post.postedDate}</div>
+        <div className="">
+          Published: {props.post.postedDate} - {minToRead} min read
+        </div>
         <PostAuthor
           name={props.post.author.name}
           title={props.post.author.title}

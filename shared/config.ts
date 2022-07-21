@@ -12,4 +12,5 @@ export const config = {
   apiErrors: {
     tooLowRecaptchaScore: "Too low recaptcha score",
   },
+  readSpeedWPM: 200,
 } as const;

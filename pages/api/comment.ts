@@ -39,6 +39,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       return;
     }
 
+    // consider hold for review if less that 0.7
     if (recaptchaResponse.body.score < 0.5) {
       response.status(400).json({
         error: config.apiErrors.tooLowRecaptchaScore,
@@ -46,6 +47,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
       return;
     }
 
+    // TODO is this secure?
     const doc = {
       _type: "comment",
       postId: request.body.postId,

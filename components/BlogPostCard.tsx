@@ -44,16 +44,17 @@ export function BlogPostCard({
             {/* <div>{sumComments} comments</div> */}
           </div>
           <div className="flex space-x-2">
-            {categories.map((current) => (
-              <Link
-                href={"/category/" + current.slug.current}
-                key={current.slug.current}
-              >
-                <a>
-                  <div className=" bg-blue-700 rounded px-3 py-2">{current.title}</div>
-                </a>
-              </Link>
-            ))}
+            {categories &&
+              categories.map((current) => (
+                <Link
+                  href={"/category/" + current.slug.current}
+                  key={current.slug.current}
+                >
+                  <a>
+                    <div className=" bg-blue-700 rounded px-3 py-2">{current.title}</div>
+                  </a>
+                </Link>
+              ))}
           </div>
         </div>
       </div>
