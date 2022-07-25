@@ -17,6 +17,7 @@ interface BlogPost {
   surprisedReactions: number;
   mehReactions: number;
   sumReactions: number;
+  sumComments: number;
   _id: string;
   _createdAt: string;
 }
@@ -48,6 +49,7 @@ const Home: NextPage<Props> = (props) => {
               postedDate={current.postedDate}
               ingress={current.ingress}
               sumReactions={current.sumReactions}
+              sumComments={current.sumComments}
             />
           ))}
         </div>
@@ -57,14 +59,19 @@ const Home: NextPage<Props> = (props) => {
 };
 
 export const getStaticProps: GetStaticProps = async () => {
-  const query =
-    '*[_type == "post"] | order(_createdAt desc) {title, ingress, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
+  // ^ means current document
+  const query = `
+    *[_type == "post"] 
+    | order(_createdAt desc) 
+    {title, ingress, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, 
+      categories[]->{title, slug}, 
+      "sumComments": count(*[_type == "comment" && postId._ref == ^._id])
+    }`;
 
   const posts: BlogPost[] = ((await sanityClient.fetch(query)) as BlogPost[]).map((current) => ({
     ...current,
     postedDate: format(new Date(current._createdAt), defaultDateFormat),
     sumReactions: current.fireReactions + current.surprisedReactions + current.mehReactions,
-    // sumComments: 0, // TODO
   }));
 
   return {

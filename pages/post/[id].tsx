@@ -215,7 +215,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const loadComments = async (postId: string) => {
     // TODO  && approved == true
     const query =
-      '*[_type == "comment" && postId == $postId] | order(_createdAt asc) {postId, author, approved, body, _id, _createdAt, _updatedAt} ';
+      '*[_type == "comment" && postId._ref == $postId && approved == true] | order(_createdAt asc) {postId, author, approved, body, _id, _createdAt, _updatedAt} ';
 
     const comments: Comment[] = ((await sanityClient.fetch(query, { postId })) as Comment[]).map((current) => ({
       ...current,

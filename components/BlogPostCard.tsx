@@ -9,6 +9,7 @@ export function BlogPostCard({
   postedDate,
   ingress,
   sumReactions,
+  sumComments,
   children,
 }: {
   title: string;
@@ -17,6 +18,7 @@ export function BlogPostCard({
   postedDate: string;
   ingress: string;
   sumReactions: number;
+  sumComments: number;
   children?: ReactNode;
 }) {
   // https://flowbite.com/docs/components/card/
@@ -41,7 +43,7 @@ export function BlogPostCard({
         <div className="py-2 px-6 mt-0 rounded-lg rounded-t-none border shadow-md bg-gray-900 border-gray-700 flex justify-between items-center">
           <div className="flex flex-col md:flex-row space-x-0 md:space-x-4">
             <div>{sumReactions} reactions</div>
-            {/* <div>{sumComments} comments</div> */}
+            <div>{sumComments} comments</div>
           </div>
           <div className="flex space-x-2">
             {categories &&

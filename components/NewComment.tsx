@@ -13,19 +13,20 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
   const showMessageOnReloadKey = "delayedMessage";
   const [loading, isLoading] = useState(false);
   const [comment, setComment] = useState("");
-  const [showSuccessNotification, setShowSuccessNotification] = useState(false);
+  const [showSuccessNotification, setShowSuccessNotification] = useState("");
   const [submitError, setSubmitError] = useState("");
   const { executeRecaptcha } = useGoogleReCaptcha();
 
   useEffect(() => {
     const storedMessage = sessionStorage.getItem(showMessageOnReloadKey);
-    if (storedMessage && storedMessage === "true") {
-      setShowSuccessNotification(true);
+    if (storedMessage && storedMessage.length > 0) {
+      setShowSuccessNotification(storedMessage);
+      sessionStorage.removeItem(showMessageOnReloadKey);
     }
   }, []);
 
   const removeNotification = () => {
-    setShowSuccessNotification(false);
+    setShowSuccessNotification("");
     sessionStorage.removeItem(showMessageOnReloadKey);
   };
 
@@ -63,7 +64,14 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
         name: props.myUserName,
       });
       // consider a TTL so it is gone on page navigation
-      sessionStorage.setItem(showMessageOnReloadKey, "true");
+      if (response.body.approved) {
+        sessionStorage.setItem(showMessageOnReloadKey, "Comment added successfully ✔️");
+      } else {
+        sessionStorage.setItem(
+          showMessageOnReloadKey,
+          "Comment added successfully, but is held for review before it appears on the site"
+        );
+      }
       setComment(""); // bit redundant with reload
       router.reload();
     } else {
@@ -74,8 +82,8 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
 
   return (
     <div className="">
-      {showSuccessNotification && (
-        <Notification onClick={() => removeNotification()}>Comment added successfully ✔️</Notification>
+      {showSuccessNotification.length > 0 && (
+        <Notification onClick={() => removeNotification()}>{showSuccessNotification}</Notification>
       )}
       <form onSubmit={onSubmit}>
         <h1 className="mt-10 text-3xl font-bold">Add a new comment:</h1>

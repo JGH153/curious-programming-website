@@ -7,7 +7,8 @@ export default {
     {
       name: "postId",
       title: "PostID",
-      type: "string",
+      type: 'reference',
+      to: [{type: 'post'}]
     },
     {
       name: "author",

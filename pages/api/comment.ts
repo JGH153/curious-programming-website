@@ -3,28 +3,24 @@ import { sanityClientBackend } from "../../shared/sanityClientBackend";
 import { httpClient } from "../../shared/httpClient";
 import { config } from "../../shared/config";
 
+const badRequestError = (response: NextApiResponse, error: string) => {
+  response.status(400).json({
+    error,
+  });
+};
+
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   if (request.method === "GET") {
     response.status(200).json({
       comments: [],
     });
   } else if (request.method === "POST") {
-    // TODO make and save to sanity with approved = false
-    // TODO add captcha?
-
-    // TODO cleaner list of validators
     if (request.body.comment.length > 1000) {
-      response.status(400).json({
-        error: "Comment is too long, max 1000 characters",
-      });
-      return;
+      return badRequestError(response, "Comment is too long, max 1000 characters");
     }
 
     if (!request.body.recaptchaToken) {
-      response.status(400).json({
-        error: "No recaptcha token provided",
-      });
-      return;
+      return badRequestError(response, "No recaptcha token provided");
     }
 
     const recaptchaResponse = await httpClient.postString(
@@ -33,26 +29,24 @@ export default async function handler(request: NextApiRequest, response: NextApi
     );
 
     if (!recaptchaResponse.ok || !recaptchaResponse.body.success) {
-      response.status(400).json({
-        error: "Recaptcha failed",
-      });
-      return;
+      return badRequestError(response, "Recaptcha failed");
     }
 
-    // consider hold for review if less that 0.7
-    if (recaptchaResponse.body.score < 0.5) {
-      response.status(400).json({
-        error: config.apiErrors.tooLowRecaptchaScore,
-      });
-      return;
+    const recaptchaScore = recaptchaResponse.body.score;
+
+    if (recaptchaScore < 0.5) {
+      return badRequestError(response, config.apiErrors.tooLowRecaptchaScore);
     }
 
     // TODO is this secure?
     const doc = {
       _type: "comment",
-      postId: request.body.postId,
+      postId: {
+        _type: "reference",
+        _ref: request.body.postId,
+      },
       author: request.body.author,
-      approved: false,
+      approved: recaptchaScore >= 0.6,
       body: request.body.comment,
     };
 
