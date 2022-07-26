@@ -24,6 +24,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: npm install -D @sanity/cli
+      - run: npm install -g @sanity/cli
       - run: npm i
       - run: SANITY_AUTH_TOKEN=${{ secrets.SANITY_AUTH_TOKEN }} sanity deploy
