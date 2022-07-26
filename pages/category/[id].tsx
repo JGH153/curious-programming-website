@@ -9,6 +9,7 @@ import { Category } from "../../shared/Category.interface";
 import { config } from "../../shared/config";
 import { defaultDateFormat } from "../../shared/dateHelpers";
 import { sanityClient } from "../../shared/sanityClient";
+import { SanitySlug } from "../../shared/SanitySlug.interface";
 
 interface BlogPost {
   title: string;
@@ -19,6 +20,8 @@ interface BlogPost {
   surprisedReactions: number;
   mehReactions: number;
   sumReactions: number;
+  sumComments: number;
+  slug: SanitySlug;
   _id: string;
   _createdAt: string;
 }
@@ -58,12 +61,13 @@ const CategoryPage: NextPage<Props> = (props) => {
           {props.posts.map((current: BlogPost) => (
             <BlogPostCard
               title={current.title}
-              id={current._id}
+              slug={current.slug}
               categories={current.categories}
               key={current._id}
               postedDate={current.postedDate}
               ingress={current.ingress}
               sumReactions={current.sumReactions}
+              sumComments={current.sumComments}
             />
           ))}
         </div>
@@ -88,7 +92,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // categories[]->slug.current == "design-system"
 export const getStaticProps: GetStaticProps = async (context) => {
   const query =
-    '*[_type == "post" && count((categories[]->slug.current)[@ in [$currentCategories]]) > 0 ] | order(_createdAt desc) {title, ingress, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, categories[]->{title, slug}}';
+    '*[_type == "post" && count((categories[]->slug.current)[@ in [$currentCategories]]) > 0 ] | order(_createdAt desc) {title, ingress, slug, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, categories[]->{title, slug}, "sumComments": count(*[_type == "comment" && postId._ref == ^._id])}';
 
   const posts: BlogPost[] = (
     (await sanityClient.fetch(query, { currentCategories: context.params?.id })) as BlogPost[]

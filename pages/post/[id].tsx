@@ -21,6 +21,7 @@ import { sanityClient } from "../../shared/sanityClient";
 import type { PortableTextBlock, ArbitraryTypedObject } from "@portabletext/types";
 import { PortableTextCode } from "../../components/portable-text/PortableTextCode";
 import { PortableTextImage } from "../../components/portable-text/PortableTextImage";
+import { SanitySlug } from "../../shared/SanitySlug.interface";
 
 // todo move to shared?
 interface BlogPost {
@@ -40,6 +41,10 @@ interface BlogPost {
   fireReactions: number;
   surprisedReactions: number;
   mehReactions: number;
+}
+
+interface BlogPostSlug {
+  slug: SanitySlug;
 }
 
 const myPortableTextComponents = {
@@ -97,10 +102,6 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
     return sum;
   };
 
-  // TODO useMemo or something
-  const wordsInText = getPortableText(props.post.body).split(" ").length;
-  const minToRead = Math.ceil(wordsInText / config.readSpeedWPM);
-
   if (props.notFound) {
     return <h1 className="text-4xl text-center">Post not found</h1>;
   }
@@ -108,6 +109,10 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
   if (router.isFallback) {
     return <LoadingNewPage />;
   }
+
+  // TODO useMemo or something
+  const wordsInText = getPortableText(props.post.body).split(" ").length;
+  const minToRead = Math.ceil(wordsInText / config.readSpeedWPM);
 
   return (
     <>
@@ -178,13 +183,13 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // move to API folder?
-  const query = '*[_type == "post"] {title, ingress, _id, _createdAt, _updatedAt}';
+  const query = '*[_type == "post"] | order(_createdAt desc) {slug}';
 
-  const posts: BlogPost[] = await sanityClient.fetch(query);
+  const posts: BlogPostSlug[] = await sanityClient.fetch(query);
 
   // Get the paths we want to pre-render based on posts
   const paths = posts.map((post) => ({
-    params: { id: post._id },
+    params: { id: post.slug.current },
   }));
 
   // fallback -> router.isFallback if 404
@@ -192,12 +197,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const loadPost = async (postId: string) => {
+  const loadPost = async (postSlug: string) => {
     // TODO how to request author image url inside author?
     const query =
-      '*[_type == "post" && _id == $postId] | order(_createdAt desc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
+      '*[_type == "post" && slug.current == $postSlug] | order(_createdAt desc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
-    const posts: BlogPost[] = ((await sanityClient.fetch(query, { postId })) as BlogPost[]).map((current) => ({
+    const posts: BlogPost[] = ((await sanityClient.fetch(query, { postSlug })) as BlogPost[]).map((current) => ({
       ...current,
       postedDate: format(new Date(current._createdAt), defaultDateFormat),
     }));
@@ -213,7 +218,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
     return post;
   };
   const loadComments = async (postId: string) => {
-    // TODO  && approved == true
     const query =
       '*[_type == "comment" && postId._ref == $postId && approved == true] | order(_createdAt asc) {postId, author, approved, body, _id, _createdAt, _updatedAt} ';
 
@@ -224,17 +228,13 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
     return comments;
   };
-  // params contains the post `id`.
-  // If the route is like /posts/1, then params.id is 1
-  // const res = await fetch(`https://.../posts/${params.id}`);
-  // const post = await res.json();
 
   if (Array.isArray(context.params?.id)) {
     throw new Error("Post not found");
   }
 
   const post = await loadPost(context.params?.id ?? "-1");
-  const comments = await loadComments(context.params?.id ?? "-1");
+  const comments = await loadComments(post?._id ?? "-1");
   const notFound = post === null;
 
   // LOAD comments

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 import { Category } from "../shared/Category.interface";
+import { SanitySlug } from "../shared/SanitySlug.interface";
 
 export function BlogPostCard({
   title,
-  id,
+  slug,
   categories,
   postedDate,
   ingress,
@@ -13,7 +14,7 @@ export function BlogPostCard({
   children,
 }: {
   title: string;
-  id: string;
+  slug: SanitySlug;
   categories: Category[];
   postedDate: string;
   ingress: string;
@@ -27,7 +28,7 @@ export function BlogPostCard({
       <div>
         <Link
           key={title}
-          href={"/post/" + id}
+          href={"/post/" + slug.current}
         >
           <a>
             <div className="p-6 rounded-lg rounded-b-none border border-b-0 shadow-md bg-gray-800 border-gray-700">

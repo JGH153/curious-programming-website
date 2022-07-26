@@ -7,6 +7,7 @@ import { Category } from "../shared/Category.interface";
 import { config } from "../shared/config";
 import { defaultDateFormat } from "../shared/dateHelpers";
 import { sanityClient } from "../shared/sanityClient";
+import { SanitySlug } from "../shared/SanitySlug.interface";
 
 interface BlogPost {
   title: string;
@@ -18,6 +19,7 @@ interface BlogPost {
   mehReactions: number;
   sumReactions: number;
   sumComments: number;
+  slug: SanitySlug;
   _id: string;
   _createdAt: string;
 }
@@ -43,7 +45,7 @@ const Home: NextPage<Props> = (props) => {
           {props.posts.map((current: BlogPost) => (
             <BlogPostCard
               title={current.title}
-              id={current._id}
+              slug={current.slug}
               categories={current.categories}
               key={current._id}
               postedDate={current.postedDate}
@@ -63,7 +65,7 @@ export const getStaticProps: GetStaticProps = async () => {
   const query = `
     *[_type == "post"] 
     | order(_createdAt desc) 
-    {title, ingress, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, 
+    {title, ingress, slug, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, 
       categories[]->{title, slug}, 
       "sumComments": count(*[_type == "comment" && postId._ref == ^._id])
     }`;
