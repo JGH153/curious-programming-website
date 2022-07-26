@@ -25,5 +25,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: npm install -D @sanity/cli
-      - run: npm ci
+      - run: npm i
       - run: npm run deploy
