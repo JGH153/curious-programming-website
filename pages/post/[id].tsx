@@ -53,7 +53,7 @@ const myPortableTextComponents = {
     h2: ({ children }: any) => <h1 className="text-2xl mt-6">{children}</h1>,
     h3: ({ children }: any) => <h1 className="text-xl mt-4">{children}</h1>,
     h4: ({ children }: any) => <h1 className="text-lg mt-3">{children}</h1>,
-    normal: ({ children }: any) => <p className="pt-3 pb-0">{children}</p>,
+    normal: ({ children }: any) => <p className="text-lg pt-3 pb-0">{children}</p>,
   },
   types: {
     code: PortableTextCode,

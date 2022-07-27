@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { sanityClientBackend } from "../../shared/sanityClientBackend";
 import { httpClient } from "../../shared/httpClient";
 import { config } from "../../shared/config";
+import { getPostSlug } from "../../shared/api/getPostSlug";
 
 const badRequestError = (response: NextApiResponse, error: string) => {
   response.status(400).json({
@@ -52,9 +53,15 @@ export default async function handler(request: NextApiRequest, response: NextApi
 
     const newDoc = await sanityClientBackend.create(doc);
 
+    // get post slug
+    const postSlug = await getPostSlug(request.body.postId);
+    if (!postSlug) {
+      return badRequestError(response, "Post not found");
+    }
+
     // force rebuild with new comment
     // TODO does not seem to work?
-    await response.revalidate("/post/" + request.body.postId);
+    await response.revalidate("/post/" + postSlug.slug.current);
 
     response.status(200).json({
       ...newDoc,

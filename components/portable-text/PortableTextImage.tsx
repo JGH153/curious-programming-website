@@ -17,6 +17,7 @@ export const PortableTextImage = ({ value, isInline }: any) => {
         .url()}
       alt={value.alt || " "}
       loading="lazy"
+      className="m-auto"
       style={{
         // Display alongside text if image appears inside a block text span
         display: isInline ? "inline-block" : "block",

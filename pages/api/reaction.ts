@@ -1,7 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { config } from "../../shared/config";
+import { getPostSlug } from "../../shared/api/getPostSlug";
 import { httpClient } from "../../shared/httpClient";
 import { sanityClientBackend } from "../../shared/sanityClientBackend";
+import { badRequestError } from "../../shared/api/badRequestError";
 
 const emojiToName = (emoji: string) => {
   const emojiMap = new Map();
@@ -24,22 +26,16 @@ export default async function handler(request: NextApiRequest, response: NextApi
       request.body.change > 1 ||
       request.body.change < -1
     ) {
-      return response.status(400).json({
-        error: "Need both postId and emoji",
-      });
+      return badRequestError(response, "Need both postId and emoji");
     }
 
     const emojiName = emojiToName(request.body.emoji);
     if (emojiName === null) {
-      return response.status(400).json({
-        error: "Unknown emoji",
-      });
+      return badRequestError(response, "Unknown emoji");
     }
 
     if (!request.body.recaptchaToken) {
-      return response.status(400).json({
-        error: "No recaptcha token provided",
-      });
+      return badRequestError(response, "No recaptcha token provided");
     }
 
     const recaptchaResponse = await httpClient.postString(
@@ -48,15 +44,11 @@ export default async function handler(request: NextApiRequest, response: NextApi
     );
 
     if (!recaptchaResponse.ok || !recaptchaResponse.body.success) {
-      return response.status(400).json({
-        error: "Recaptcha failed",
-      });
+      return badRequestError(response, "Recaptcha failed");
     }
 
     if (recaptchaResponse.body.score < 0.5) {
-      return response.status(400).json({
-        error: config.apiErrors.tooLowRecaptchaScore,
-      });
+      return badRequestError(response, config.apiErrors.tooLowRecaptchaScore);
     }
 
     const result = await sanityClientBackend
@@ -64,8 +56,14 @@ export default async function handler(request: NextApiRequest, response: NextApi
       .inc({ [emojiName]: request.body.change })
       .commit();
 
+    // get post slug
+    const postSlug = await getPostSlug(request.body.postId);
+    if (!postSlug) {
+      return badRequestError(response, "Post not found");
+    }
+
     // force rebuild with new comment
-    await response.revalidate("/post/" + request.body.postId);
+    await response.revalidate("/post/" + postSlug.slug.current);
 
     response.status(200).json({
       ...result,
