@@ -12,7 +12,7 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
           <div className="pr-3 py-1">
             {comment.author} (at {comment.postedDate}):
           </div>
-          <div className="rounded-3xl bg-chat-blue px-3 py-2 w-max max-w-fit">{comment.body}</div>
+          <div className="rounded-3xl whitespace-pre bg-chat-blue px-3 py-2 w-max max-w-fit">{comment.body}</div>
         </div>
       );
     } else {
@@ -24,7 +24,7 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
           <div className="pl-3 py-1">
             {comment.author} (at {comment.postedDate}):
           </div>
-          <div className="rounded-3xl bg-chat-dark px-3 py-2 w-max max-w-fit">{comment.body}</div>
+          <div className="rounded-3xl whitespace-pre bg-chat-dark px-3 py-2 w-max max-w-fit">{comment.body}</div>
         </div>
       );
     }
