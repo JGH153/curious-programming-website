@@ -28,4 +28,4 @@ jobs:
       - run: npm i
       - run: npm -v && node -v
       - run: sanity versions
-      - run: SANITY_AUTH_TOKEN=${{ secrets.SANITY_AUTH_TOKEN }} sanity deploy
+      #- run: SANITY_AUTH_TOKEN=${{ secrets.SANITY_AUTH_TOKEN }} sanity deploy
