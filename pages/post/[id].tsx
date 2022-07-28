@@ -1,5 +1,5 @@
 import { PortableText } from "@portabletext/react";
-import format from "date-fns/format";
+import type { PortableTextBlock } from "@portabletext/types";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
@@ -7,20 +7,19 @@ import { useRouter } from "next/router";
 import probe from "probe-image-size";
 import { useEffect, useRef, useState } from "react";
 import { CommentList } from "../../components/CommentList";
+import { DisplayDate } from "../../components/DisplayDate";
 import { LoadingNewPage } from "../../components/LoadingNewPage";
 import { NewComment } from "../../components/NewComment";
+import { PortableTextCode } from "../../components/portable-text/PortableTextCode";
+import { PortableTextImage } from "../../components/portable-text/PortableTextImage";
 import { PostAuthor } from "../../components/PostAuthor";
 import { PostReactions } from "../../components/PostReactions";
 import { YoutubeVideo } from "../../components/YoutubeVideo";
 import { Author } from "../../shared/author.interface";
 import { Comment } from "../../shared/comment.interface";
 import { config } from "../../shared/config";
-import { defaultDateFormat } from "../../shared/dateHelpers";
 import { Reaction } from "../../shared/Reaction.interface";
 import { sanityClient } from "../../shared/sanityClient";
-import type { PortableTextBlock, ArbitraryTypedObject } from "@portabletext/types";
-import { PortableTextCode } from "../../components/portable-text/PortableTextCode";
-import { PortableTextImage } from "../../components/portable-text/PortableTextImage";
 import { SanitySlug } from "../../shared/SanitySlug.interface";
 
 // todo move to shared?
@@ -147,7 +146,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
           height={props.post.imageHeight}
         />
         <div className="">
-          Published: {props.post.postedDate} - {minToRead} min read
+          Published: <DisplayDate date={props.post.postedDate} /> - {minToRead} min read
         </div>
         <PostAuthor
           name={props.post.author.name}
@@ -200,12 +199,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const loadPost = async (postSlug: string) => {
     // TODO how to request author image url inside author?
     const query =
-      '*[_type == "post" && slug.current == $postSlug] | order(_createdAt desc) {title, ingress, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
+      '*[_type == "post" && slug.current == $postSlug] | order(_createdAt desc) {title, ingress, "postedDate": _createdAt, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
-    const posts: BlogPost[] = ((await sanityClient.fetch(query, { postSlug })) as BlogPost[]).map((current) => ({
-      ...current,
-      postedDate: format(new Date(current._createdAt), defaultDateFormat),
-    }));
+    const posts: BlogPost[] = (await sanityClient.fetch(query, { postSlug })) as BlogPost[];
     if (posts.length !== 1) {
       return null;
     }
@@ -219,12 +215,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
   };
   const loadComments = async (postId: string) => {
     const query =
-      '*[_type == "comment" && postId._ref == $postId && approved == true] | order(_createdAt asc) {postId, author, approved, body, _id, _createdAt, _updatedAt} ';
+      '*[_type == "comment" && postId._ref == $postId && approved == true] | order(_createdAt asc) {postId, author, "postedDate": _createdAt, approved, body, _id, _createdAt, _updatedAt} ';
 
-    const comments: Comment[] = ((await sanityClient.fetch(query, { postId })) as Comment[]).map((current) => ({
-      ...current,
-      postedDate: format(new Date(current._createdAt), defaultDateFormat),
-    }));
+    const comments: Comment[] = (await sanityClient.fetch(query, { postId })) as Comment[];
 
     return comments;
   };

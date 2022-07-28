@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { Comment } from "../shared/comment.interface";
+import { DisplayDate } from "./DisplayDate";
 
 export function CommentList(props: { postId: string; comments: Comment[]; myUserName: string }) {
+  // TODO format comment date (new component)
   const getComment = (comment: Comment) => {
     if (comment.author === props.myUserName) {
       return (
@@ -10,7 +12,8 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
           key={comment._id}
         >
           <div className="pr-3 py-1">
-            {comment.author} (at {comment.postedDate}):
+            {comment.author} (at <DisplayDate date={comment.postedDate} />
+            ):
           </div>
           <div className="rounded-3xl whitespace-pre bg-chat-blue px-3 py-2 w-max max-w-fit">{comment.body}</div>
         </div>
@@ -22,7 +25,8 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
           key={comment._id}
         >
           <div className="pl-3 py-1">
-            {comment.author} (at {comment.postedDate}):
+            {comment.author} (at <DisplayDate date={comment.postedDate} />
+            ):
           </div>
           <div className="rounded-3xl whitespace-pre bg-chat-dark px-3 py-2 w-max max-w-fit">{comment.body}</div>
         </div>
