@@ -71,10 +71,9 @@ export const getStaticProps: GetStaticProps = async () => {
   const query =
     '*[_type == "author" && _id == $gregerId] {name, slug, title, email, bio, "imageUrl": image.asset->url, _id, _createdAt, _updatedAt}';
 
-  // hardcoded ID for now
+  // hardcoded ID as only one
   const author: Author[] = await sanityClient.fetch(query, { gregerId: "706a7fa2-21ca-4381-8087-dedd1bf099ca" });
   if (author.length !== 1) {
-    // TODO
     throw new Error("Author not found");
   }
 

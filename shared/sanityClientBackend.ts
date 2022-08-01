@@ -1,7 +1,6 @@
 import sanityClientLib from "@sanity/client";
 
-// ONLY use in API folder
-// TODO move to API folder?
+// ONLY use in API(backend) folder
 export const sanityClientBackend = sanityClientLib({
   projectId: "p3gew69c",
   dataset: "production",

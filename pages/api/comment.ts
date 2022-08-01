@@ -60,7 +60,6 @@ export default async function handler(request: NextApiRequest, response: NextApi
     }
 
     // force rebuild with new comment
-    // TODO does not seem to work?
     await response.revalidate("/post/" + postSlug.slug.current);
 
     response.status(200).json({

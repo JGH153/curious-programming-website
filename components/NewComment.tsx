@@ -30,7 +30,14 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
     sessionStorage.removeItem(showMessageOnReloadKey);
   };
 
-  // useCallback TODO ?
+  const getRecaptchaToken = async () => {
+    if (!executeRecaptcha) {
+      setSubmitError("Execute recaptcha not yet available");
+      return;
+    }
+    return await executeRecaptcha("comment");
+  };
+
   const onSubmit = async (form: React.FormEvent<HTMLFormElement>) => {
     form.preventDefault();
 
@@ -39,11 +46,7 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
     }
 
     isLoading(true);
-    if (!executeRecaptcha) {
-      setSubmitError("Execute recaptcha not yet available");
-      return;
-    }
-    const recaptchaToken = await executeRecaptcha("comment");
+    const recaptchaToken = await getRecaptchaToken();
 
     const response = await httpClient.post("/api/comment", {
       comment: comment,
@@ -75,7 +78,7 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
       setComment(""); // bit redundant with reload
       router.reload();
     } else {
-      console.error(response.body);
+      setSubmitError(response.body);
     }
     isLoading(false);
   };
@@ -105,7 +108,6 @@ export function NewComment(props: { postId: string; myUserName: string; setMyUse
 
         {submitError && <p className="text-red-500 mb-4">{submitError}</p>}
 
-        {/* TODO disabled if no text */}
         {comment.length > 0 && props.myUserName.length > 0 && (
           <ButtonGradient disabled={comment.length === 0}>Add Comment</ButtonGradient>
         )}

@@ -25,7 +25,7 @@ export function PostReactions(props: { postId: string; reactions: Reaction[] }) 
     };
 
     // save selection to local storage? TODO
-    // how to limit 1 time pr article? TODO
+    // how to limit 1 time pr article? TODO Do we need this?
     if (selectedEmoji === emoji) {
       setSelectedEmoji("");
       setLastVotedEmoji("");

@@ -18,8 +18,6 @@ const emojiToName = (emoji: string) => {
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse) {
   if (request.method === "POST") {
-    // TODO add captcha?
-
     if (
       request.body.emoji.length !== 2 ||
       request.body.postId.length < 36 ||

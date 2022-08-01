@@ -1,17 +1,15 @@
-import { PortableText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import probe from "probe-image-size";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CommentList } from "../../components/CommentList";
 import { DisplayDate } from "../../components/DisplayDate";
 import { LoadingNewPage } from "../../components/LoadingNewPage";
 import { NewComment } from "../../components/NewComment";
-import { PortableTextCode } from "../../components/portable-text/PortableTextCode";
-import { PortableTextImage } from "../../components/portable-text/PortableTextImage";
+import { PortableTextComponent } from "../../components/portable-text/PortableTextComponent";
 import { PostAuthor } from "../../components/PostAuthor";
 import { PostReactions } from "../../components/PostReactions";
 import { YoutubeVideo } from "../../components/YoutubeVideo";
@@ -22,7 +20,6 @@ import { Reaction } from "../../shared/Reaction.interface";
 import { sanityClient } from "../../shared/sanityClient";
 import { SanitySlug } from "../../shared/SanitySlug.interface";
 
-// todo move to shared?
 interface BlogPost {
   title: string;
   ingress: string;
@@ -46,18 +43,22 @@ interface BlogPostSlug {
   slug: SanitySlug;
 }
 
-const myPortableTextComponents = {
-  block: {
-    h1: ({ children }: any) => <h1 className="text-3xl mt-10 font-bold">{children}</h1>,
-    h2: ({ children }: any) => <h1 className="text-2xl mt-6">{children}</h1>,
-    h3: ({ children }: any) => <h1 className="text-xl mt-4">{children}</h1>,
-    h4: ({ children }: any) => <h1 className="text-lg mt-3">{children}</h1>,
-    normal: ({ children }: any) => <p className="text-lg pt-3 pb-0">{children}</p>,
-  },
-  types: {
-    code: PortableTextCode,
-    image: PortableTextImage,
-  },
+const getPortableTextString = (elements?: any[]): string => {
+  if (!elements) {
+    return "";
+  }
+  const sum = elements.reduce((total: number, currentElement) => {
+    let elementText = "";
+    if (currentElement.children) {
+      elementText += getPortableTextString(currentElement.children) + " ";
+    }
+    if (currentElement.text && currentElement.text.length > 0) {
+      elementText += currentElement.text + " ";
+    }
+    return total + elementText;
+  }, 0);
+
+  return sum;
 };
 
 const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }> = (props) => {
@@ -86,20 +87,8 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
     { emoji: "😒", count: props.post?.mehReactions ?? 0 },
   ];
 
-  const getPortableText = (elements: any[]): string => {
-    const sum = elements.reduce((total: number, currentElement) => {
-      let elementText = "";
-      if (currentElement.children) {
-        elementText += getPortableText(currentElement.children) + " ";
-      }
-      if (currentElement.text && currentElement.text.length > 0) {
-        elementText += currentElement.text + " ";
-      }
-      return total + elementText;
-    }, 0);
-
-    return sum;
-  };
+  const wordsInText = useMemo(() => getPortableTextString(props.post?.body).split(" ").length, [props.post?.body]);
+  const minToRead = Math.ceil(wordsInText / config.readSpeedWPM);
 
   if (props.notFound) {
     return <h1 className="text-4xl text-center">Post not found</h1>;
@@ -108,10 +97,6 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
   if (router.isFallback) {
     return <LoadingNewPage />;
   }
-
-  // TODO useMemo or something
-  const wordsInText = getPortableText(props.post.body).split(" ").length;
-  const minToRead = Math.ceil(wordsInText / config.readSpeedWPM);
 
   return (
     <>
@@ -154,10 +139,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
           email={props.post.author.email}
           imageUrl={props.post.authorImgUrl}
         />
-        <PortableText
-          value={props.post.body}
-          components={myPortableTextComponents}
-        />
+        <PortableTextComponent content={props.post.body} />
 
         {props.post.youtubeVideo && <YoutubeVideo id={props.post.youtubeVideo} />}
 
@@ -181,9 +163,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  // move to API folder?
   const query = '*[_type == "post"] | order(_createdAt desc) {slug}';
-
   const posts: BlogPostSlug[] = await sanityClient.fetch(query);
 
   // Get the paths we want to pre-render based on posts
@@ -197,7 +177,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const loadPost = async (postSlug: string) => {
-    // TODO how to request author image url inside author?
+    // TODO how to format better using prettier?
     const query =
       '*[_type == "post" && slug.current == $postSlug] | order(_createdAt desc) {title, ingress, "postedDate": _createdAt, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
@@ -207,6 +187,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
     }
     const post = posts[0];
 
+    // get image size for next/image
     let result = await probe(post.imageUrl);
     post.imageWidth = result.width;
     post.imageHeight = result.height;
@@ -230,9 +211,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const comments = await loadComments(post?._id ?? "-1");
   const notFound = post === null;
 
-  // LOAD comments
-
-  // Pass post data to the page via props
   return { props: { post, comments, notFound }, revalidate: config.defaultRevalidateTime };
 };
 
