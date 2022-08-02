@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function PostAuthor(props: { name: string; title: string; email: string; imageUrl: string }) {
   return (
-    <div className="flex ">
+    <div className="flex">
       <Image
         className="rounded-full"
         width={80}

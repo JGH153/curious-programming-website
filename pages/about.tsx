@@ -14,6 +14,7 @@ interface Props {
 }
 
 const About: NextPage<Props> = (props) => {
+  // Add any components used in the MDX here
   const components: React.ComponentProps<typeof MDXProvider>["components"] = {
     strong: (props: any) => <span className="font-bold">{props.children}</span>,
   };
@@ -31,18 +32,18 @@ const About: NextPage<Props> = (props) => {
       </Head>
       <section className="flex items-center justify-center space-y-4 flex-col-reverse md:flex-row">
         <div className="w-1/2 pa-4 flex flex-col space-y-4 p-4">
-          <h1 className="text-3xl font-bold text-center">
-            <a
-              href={"mailto:" + props.author.email}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <span className="font-normal">About:</span> {props.author.name}
-            </a>
-          </h1>
-          <h2 className="text-xl font-bold text-center">
-            <span className="font-normal">Title:</span> {props.author.title}
-          </h2>
+          <div className="flex flex-col space-y-1">
+            <h1 className="text-3xl font-bold text-center">
+              <a
+                href={"mailto:" + props.author.email}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {props.author.name}
+              </a>
+            </h1>
+            <h2 className="text-xl font-bold text-center">{props.author.title}</h2>
+          </div>
           <MDXRemote
             {...props.author.bio}
             components={components}
