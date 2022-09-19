@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { BlogPostCard } from "../components/BlogPostCard";
 import { HomeInfoSection } from "../components/HomeInfoSection";
 import { Category } from "../shared/Category.interface";
@@ -40,7 +41,6 @@ const Home: NextPage<Props> = (props) => {
       </Head>
       <HomeInfoSection />
       <section>
-        {/* List off posts */}
         <div className="flex flex-col space-y-4">
           {props.posts.map((current: BlogPost) => (
             <BlogPostCard
@@ -56,15 +56,24 @@ const Home: NextPage<Props> = (props) => {
           ))}
         </div>
       </section>
+
+      <div className="flex justify-center">
+        <Link href={"/posts/2"}>
+          <a>
+            <button className=" bg-blue-700 rounded py-2 mt-5 px-10 text-center">More posts</button>
+          </a>
+        </Link>
+      </div>
     </>
   );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
   // ^ means current document
+  // simple but slow ordering due to low post volume
   const query = `
     *[_type == "post"] 
-    | order(_createdAt desc) 
+    | order(_createdAt desc) [0...${config.postsPerPage}]
     {title, ingress, slug, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, 
       categories[]->{title, slug}, 
       "sumComments": count(*[_type == "comment" && postId._ref == ^._id])

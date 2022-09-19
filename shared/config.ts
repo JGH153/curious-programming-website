@@ -13,4 +13,5 @@ export const config = {
     tooLowRecaptchaScore: "Too low recaptcha score",
   },
   readSpeedWPM: 200,
+  postsPerPage: 3,
 } as const;

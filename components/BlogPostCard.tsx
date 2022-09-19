@@ -54,7 +54,7 @@ export function BlogPostCard({
                   key={current.slug.current}
                 >
                   <a>
-                    <div className=" bg-blue-700 rounded px-3 py-2">{current.title}</div>
+                    <button className=" bg-blue-700 rounded px-3 py-2">{current.title}</button>
                   </a>
                 </Link>
               ))}

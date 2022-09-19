@@ -56,7 +56,6 @@ const CategoryPage: NextPage<Props> = (props) => {
         All pots with category: <span className="font-bold">{props.activeCategory.title}</span>
       </h1>
       <section>
-        {/* List off posts */}
         <div className="flex flex-col space-y-4">
           {props.posts.map((current: BlogPost) => (
             <BlogPostCard
