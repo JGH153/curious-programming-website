@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 import { Category } from "../shared/Category.interface";
@@ -8,6 +9,7 @@ export function BlogPostCard({
   slug,
   categories,
   postedDate,
+  imageUrl,
   ingress,
   sumReactions,
   sumComments,
@@ -17,6 +19,7 @@ export function BlogPostCard({
   slug: SanitySlug;
   categories: Category[];
   postedDate: string;
+  imageUrl: string;
   ingress: string;
   sumReactions: number;
   sumComments: number;
@@ -31,7 +34,16 @@ export function BlogPostCard({
           href={"/post/" + slug.current}
         >
           <a>
-            <div className="p-6 rounded-lg rounded-b-none border border-b-0 shadow-md bg-gray-800 border-gray-700">
+            <div className="relative h-40">
+              <Image
+                src={imageUrl}
+                className="rounded-t-lg"
+                layout="fill"
+                objectFit={"cover"}
+                alt="Main image for post"
+              />
+            </div>
+            <div className="p-6 border border-b-0 border-t-0 shadow-md bg-gray-800 border-gray-700">
               <h5 className="mb-2 text-2xl font-bold tracking-tight text-white">{title}</h5>
               <div className="mb-3 font-normal text-gray-400">
                 <div className=""> Published: {postedDate}</div>

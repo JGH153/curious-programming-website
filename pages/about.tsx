@@ -22,9 +22,7 @@ const About: NextPage<Props> = (props) => {
   return (
     <>
       <Head>
-        <title>
-          About: {props.author.name} - {config.metaTags.title}
-        </title>
+        <title>{`About: ${props.author.name} - ${config.metaTags.title}`}</title>
         <meta
           name="description"
           content={`About: ${props.author.name} - ${props.author.title}`}

@@ -16,6 +16,7 @@ interface BlogPost {
   ingress: string;
   postedDate: string;
   categories: Category[];
+  imageUrl: string;
   fireReactions: number;
   surprisedReactions: number;
   mehReactions: number;
@@ -55,6 +56,7 @@ const PostsPage: NextPage<Props> = (props) => {
             <BlogPostCard
               title={current.title}
               slug={current.slug}
+              imageUrl={current.imageUrl}
               categories={current.categories}
               key={current._id}
               postedDate={current.postedDate}
@@ -111,7 +113,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const query = `
     *[_type == "post"] 
     | order(_createdAt desc) [${from}...${to}]
-    {title, ingress, slug, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, 
+    {title, ingress, slug, "imageUrl": mainImage.asset->url, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, 
       categories[]->{title, slug}, 
       "sumComments": count(*[_type == "comment" && postId._ref == ^._id])
     }`;

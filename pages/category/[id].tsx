@@ -16,6 +16,7 @@ interface BlogPost {
   ingress: string;
   postedDate: string;
   categories: Category[];
+  imageUrl: string;
   fireReactions: number;
   surprisedReactions: number;
   mehReactions: number;
@@ -53,7 +54,7 @@ const CategoryPage: NextPage<Props> = (props) => {
         />
       </Head>
       <h1 className="text-center my-8 text-4xl">
-        All pots with category: <span className="font-bold">{props.activeCategory.title}</span>
+        All posts with category: <span className="font-bold">{props.activeCategory.title}</span>
       </h1>
       <section>
         <div className="flex flex-col space-y-4">
@@ -61,6 +62,7 @@ const CategoryPage: NextPage<Props> = (props) => {
             <BlogPostCard
               title={current.title}
               slug={current.slug}
+              imageUrl={current.imageUrl}
               categories={current.categories}
               key={current._id}
               postedDate={current.postedDate}
@@ -91,7 +93,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // categories[]->slug.current == "design-system"
 export const getStaticProps: GetStaticProps = async (context) => {
   const query =
-    '*[_type == "post" && count((categories[]->slug.current)[@ in [$currentCategories]]) > 0 ] | order(_createdAt desc) {title, ingress, slug, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, categories[]->{title, slug}, "sumComments": count(*[_type == "comment" && postId._ref == ^._id])}';
+    '*[_type == "post" && count((categories[]->slug.current)[@ in [$currentCategories]]) > 0 ] | order(_createdAt desc) {title, ingress, slug, "imageUrl": mainImage.asset->url, fireReactions, surprisedReactions, mehReactions, _id, _createdAt, _updatedAt, categories[]->{title, slug}, "sumComments": count(*[_type == "comment" && postId._ref == ^._id])}';
 
   const posts: BlogPost[] = (
     (await sanityClient.fetch(query, { currentCategories: context.params?.id })) as BlogPost[]
