@@ -1,3 +1,4 @@
+import { toPlainText } from "@portabletext/react";
 import type { PortableTextBlock } from "@portabletext/types";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import Head from "next/head";
@@ -46,24 +47,6 @@ interface BlogPostSlug {
   slug: SanitySlug;
 }
 
-const getPortableTextString = (elements?: any[]): string => {
-  if (!elements) {
-    return "";
-  }
-  const sum = elements.reduce((total: number, currentElement) => {
-    let elementText = "";
-    if (currentElement.children) {
-      elementText += getPortableTextString(currentElement.children) + " ";
-    }
-    if (currentElement.text && currentElement.text.length > 0) {
-      elementText += currentElement.text + " ";
-    }
-    return total + elementText;
-  }, 0);
-
-  return sum;
-};
-
 const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }> = (props) => {
   const [myUserName, setMyUserName] = useState("");
   const isFirstRun = useRef(true);
@@ -90,7 +73,7 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
     { emoji: "😒", count: props.post?.mehReactions ?? 0 },
   ];
 
-  const wordsInText = useMemo(() => getPortableTextString(props.post?.body).split(" ").length, [props.post?.body]);
+  const wordsInText = useMemo(() => toPlainText(props.post?.body).split(" ").length, [props.post?.body]);
   const minToRead = Math.ceil(wordsInText / config.readSpeedWPM);
 
   if (props.notFound) {
