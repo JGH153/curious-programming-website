@@ -41,7 +41,7 @@ export function PostReactions(props: { postId: string; reactions: Reaction[] }) 
   };
 
   return (
-    <div className="mt-16 flex flex-col items-center justify-center">
+    <div className="mt-10 flex flex-col items-center justify-center">
       <h1 className="text-2xl mb-2 font-bold">Your reaction?</h1>
       <div className="flex space-x-2">
         {props.reactions.map((reaction) => (

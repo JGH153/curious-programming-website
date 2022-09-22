@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import { Category } from "../shared/Category.interface";
 import { SanitySlug } from "../shared/SanitySlug.interface";
+import { PostCategoriesList } from "./PostCategoriesList";
 
 export function BlogPostCard({
   title,
@@ -58,19 +59,7 @@ export function BlogPostCard({
             <div>{sumReactions} reactions</div>
             <div>{sumComments} comments</div>
           </div>
-          <div className="flex space-x-2">
-            {categories &&
-              categories.map((current) => (
-                <Link
-                  href={"/category/" + current.slug.current}
-                  key={current.slug.current}
-                >
-                  <a>
-                    <button className=" bg-blue-700 rounded px-3 py-2">{current.title}</button>
-                  </a>
-                </Link>
-              ))}
-          </div>
+          <PostCategoriesList categories={categories} />
         </div>
       </div>
     </>

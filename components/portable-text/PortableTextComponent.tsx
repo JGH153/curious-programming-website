@@ -10,6 +10,10 @@ const myPortableTextComponents = {
     h4: ({ children }: any) => <h1 className="text-lg mt-3">{children}</h1>,
     normal: ({ children }: any) => <p className="text-lg pt-3 pb-0">{children}</p>,
   },
+  list: {
+    bullet: ({ children }: any) => <ul className="list-disc pl-5">{children}</ul>,
+    number: ({ children }: any) => <ol className="list-decimal pl-5">{children}</ol>,
+  },
   types: {
     code: PortableTextCode,
     image: PortableTextImage,

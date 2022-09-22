@@ -127,7 +127,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const totalPosts: number = await getTotalPosts();
 
   return {
-    props: { posts: posts, pageNumber: context.params?.id ?? "1", finalPage: totalPosts === to },
+    props: { posts: posts, pageNumber: context.params?.id ?? "1", finalPage: to >= totalPosts },
     revalidate: config.defaultRevalidateTime,
   };
 };

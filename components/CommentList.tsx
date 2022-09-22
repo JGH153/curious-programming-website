@@ -35,7 +35,7 @@ export function CommentList(props: { postId: string; comments: Comment[]; myUser
   };
 
   return (
-    <div className="mt-16">
+    <div className="mt-10">
       <h1 className="text-3xl font-bold text-center">Comments:</h1>
       {props.comments.length === 0 && <h2 className="text-center text-xl">No comments yet</h2>}
       <div className="">{props.comments.map((comment) => getComment(comment))}</div>

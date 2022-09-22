@@ -11,9 +11,11 @@ import { LoadingNewPage } from "../../components/LoadingNewPage";
 import { NewComment } from "../../components/NewComment";
 import { PortableTextComponent } from "../../components/portable-text/PortableTextComponent";
 import { PostAuthor } from "../../components/PostAuthor";
+import { PostCategoriesList } from "../../components/PostCategoriesList";
 import { PostReactions } from "../../components/PostReactions";
 import { YoutubeVideo } from "../../components/YoutubeVideo";
 import { Author } from "../../shared/author.interface";
+import { Category } from "../../shared/Category.interface";
 import { Comment } from "../../shared/comment.interface";
 import { config } from "../../shared/config";
 import { Reaction } from "../../shared/Reaction.interface";
@@ -26,6 +28,7 @@ interface BlogPost {
   imageUrl: string;
   author: Author;
   authorImgUrl: string;
+  categories: Category[];
   _createdAt: string;
   postedDate: string;
   body: PortableTextBlock[];
@@ -143,6 +146,11 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
 
         {props.post.youtubeVideo && <YoutubeVideo id={props.post.youtubeVideo} />}
 
+        <div className="flex flex-col justify-center items-center mt-10">
+          <h1 className="text-2xl mb-2 font-bold">Tags</h1>
+          <PostCategoriesList categories={props.post.categories} />
+        </div>
+
         <PostReactions
           postId={props.post._id}
           reactions={reactions}
@@ -179,7 +187,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const loadPost = async (postSlug: string) => {
     // TODO how to format better using prettier?
     const query =
-      '*[_type == "post" && slug.current == $postSlug] | order(_createdAt desc) {title, ingress, "postedDate": _createdAt, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
+      '*[_type == "post" && slug.current == $postSlug] | order(_createdAt desc) {title, ingress, "postedDate": _createdAt, author->, "authorImgUrl": author->image.asset->url, body, "imageUrl": mainImage.asset->url, youtubeVideo, categories[]->{title, slug}, _id, _createdAt, _updatedAt, fireReactions, surprisedReactions, mehReactions}';
 
     const posts: BlogPost[] = (await sanityClient.fetch(query, { postSlug })) as BlogPost[];
     if (posts.length !== 1) {
