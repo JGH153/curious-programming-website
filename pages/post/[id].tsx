@@ -73,8 +73,14 @@ const Post: NextPage<{ post: BlogPost; comments: Comment[]; notFound: boolean }>
     { emoji: "😒", count: props.post?.mehReactions ?? 0 },
   ];
 
-  const wordsInText = useMemo(() => toPlainText(props.post?.body).split(" ").length, [props.post?.body]);
-  const minToRead = Math.ceil(wordsInText / config.readSpeedWPM);
+  const getMinToRead = () => {
+    if (!props.post?.body) {
+      return 0;
+    }
+    const wordsInText = toPlainText(props.post?.body).split(" ").length;
+    return Math.ceil(wordsInText / config.readSpeedWPM);
+  };
+  const minToRead = useMemo(getMinToRead, [props.post]);
 
   if (props.notFound) {
     return <h1 className="text-4xl text-center">Post not found</h1>;
